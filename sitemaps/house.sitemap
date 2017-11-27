@@ -40,9 +40,9 @@ sitemap house label="house"
         {
                 Slider item=buitenlamp_achtertuin label="buitenlamp_achtertuin [%.1f %%]" icon="outdoorlight"
         }
-    Frame label="Weer" icon="sun"
+    Frame label="Weer" 
                 {
-                Text item=Temperature label="weerStation voorspelling" valuecolor=[Temperature<0="BLUE",Temperature>0="RED"]
+                Text item=Temperature label="weerStation voorspelling" valuecolor=[Temperature<0="BLUE",Temperature>0="RED"] icon="wind"
                         {
 			Text item=totalDayLight icon="sun"
                         Text item=LastUpdate icon="calendar"
