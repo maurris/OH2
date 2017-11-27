@@ -1,0 +1,6 @@
+weather:apikey.Wunderground=188d82bd1f8bcc94
+weather:location.home.latitude=51.5632006
+weather:location.home.longitude=5.0793636
+weather:location.home.provider=Wunderground
+weather:location.home.language=en
+weather:location.home.updateInterval=10

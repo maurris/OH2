@@ -1,0 +1,226 @@
+import java.util.Calendar
+import org.joda.time.DateTime
+import org.joda.time
+
+var Timer timer = null
+var long last_change = now.millis
+
+
+rule "test"
+when 
+Item darkness received update
+then 
+        logInfo("test", "test send")
+//	sendCommand(keukenWandLamp, 15.00)
+        logInfo("test", "test ended")
+end
+
+rule "LivingRoom Lights morning"
+when
+        Time cron "0 20 6 ? * MON,TUE,WED * ?" or
+        Time cron "0 0 7 ? * THU,FRI,SAT,SUN * ?" or
+        Time cron "0 0 9 ? * THU,FRI,SAT,SUN * ?" or
+        Time cron "0 30 8 ? * MON,TUE,WED * ?"
+then
+	if (vloerlamp_woonkamer.state < 80.00) {
+        sendCommand(vloerlamp_woonkamer, 85.00)
+        Thread::sleep(300)
+	sendCommand(keukenWandLamp, 65)
+        Thread::sleep(300)
+        sendCommand(toio,ON)
+        Thread::sleep(300)
+	sendCommand(buitenlamp_achtertuin, OFF)
+        logInfo("LIVING LIGHTS MORNING","MORNING ON " + vloerlamp_woonkamer.state)
+	}else{
+       	sendCommand(keukenWandLamp, OFF)
+        Thread::sleep(300)
+	sendCommand(vloerlamp_woonkamer, OFF)
+        Thread::sleep(300)
+        sendCommand(toio,OFF)
+        Thread::sleep(300)
+	sendCommand(buitenlamp_achtertuin, OFF)
+	Thread::sleep(300)
+	sendCommand(darkness, OFF)
+        Thread::sleep(300)
+        sendCommand(keukenWandLamp, OFF)
+	logInfo("LIVING LIGHTS MORNING","MORNING OF")}
+end
+
+rule "darkness" 
+when
+	Time cron "0 0/10 15-22 1/1 * ? * ?"
+then
+val Number devider = 1500
+val Number multiplier = 180
+var Number dayLength = totalDayLight.state
+var int seasonOffset = (((dayLength/devider)*multiplier)/1).intValue*1
+
+if (Condition.state == "Mostly Cloudy" || Condition.state == "Overcast" || Condition.state == "Light Rain" || 
+Condition.state == "Heavy Rain" || Condition.state == "Haze" || Condition.state == "Fog")	seasonOffset = (seasonOffset + 60)
+
+if ((now.plusMinutes(seasonOffset).isAfter((Sunset_TimeOld.state as DateTimeType).calendar.timeInMillis))&& darkness.state == OFF)
+	{
+	logInfo("DARKNESS", "to ON " + now.plusMinutes(seasonOffset) + " after Sunset time " + 
+Sunset_TimeOld.state + " Weather: " +Condition.state + " seasonOffset = "+ seasonOffset+ " darkness = "+ darkness.state)
+	sendCommand(darkness, ON)
+}else{   
+	logInfo("DARKNESS", "not ON "+ now.plusMinutes(seasonOffset) + " NOT after Sunset " + Sunset_TimeOld.state + " Weather: " +Condition.state + " OR lights already on" + " seasonOffset = "+ seasonOffset+ " darkness = "+ darkness.state)}
+end
+
+rule "LivingRoom Lights"
+when
+	Item darkness changed to ON
+then
+	logInfo("LIVING LIGHTS","Apparently its dark now, so turning on some lights")
+        sendCommand(keukenWandLamp, 70)
+        Thread::sleep(300)
+	sendCommand(vloerlamp_woonkamer,75.00)
+        Thread::sleep(300)
+        sendCommand(toio,ON)
+        Thread::sleep(300)
+        sendCommand(keukenWandLamp, 70)
+end
+
+rule "Periodically check presence" 
+when
+	Time cron "0 0/20 * 1/1 * ? * ?" 
+then
+        if (SensorActivity_Hallway.state === NULL || SensorActivity_Hallway.state == "") {SensorActivity_Hallway.postUpdate(new DateTimeType(Calendar::getInstance()))}
+        if (Presence.state == ON)
+        {
+                if(phoneMaurice.state == OFF && phoneJudith.state == OFF && (now.minusMinutes(45).isAfter((SensorActivity_Hallway.state as DateTimeType).calendar.timeInMillis))
+		) {
+                        logInfo("PresenceCheck", "Presence to OFF, no phones within reach and last registered activity at " + SensorActivity_Hallway.state)
+                                sendCommand(Presence, OFF)
+                }else
+        		{logInfo("PresenceCheck", "Presence ON, phones MauJu states: " + phoneMaurice.state +phoneJudith.state)}
+        }
+        else
+        	{logInfo("PresenceCheck", "Presence undefined or Presence NOT ON")}
+end 
+
+rule "Coming home" 
+when
+        Item gMobiles received update or
+	Item phoneMaurice changed or
+	Item phoneJudith changed
+then
+	var String whoIsHome = "nobody"
+	if (phoneMaurice.state == ON) {whoIsHome = "Maurice"}
+	if (phoneJudith.state == ON) {whoIsHome = "Judith"}
+	if (phoneMaurice.state == ON && phoneJudith.state == ON) {whoIsHome = "Both"}
+        if(phoneMaurice.state == ON || phoneJudith.state == ON) {
+                logInfo("PresenceCheck", "Presence to ON, back home is " + whoIsHome)
+                sendCommand(Presence, ON)
+ 	var DateTime testme = now.plusMinutes(0)
+        	lastHallMovement.postUpdate(new DateTimeType(testme.toString))
+	logInfo("PresenceCheck","Last movement updated to " + lastHallMovement.state)
+        }else {logInfo("PresenceCheck", " " + whoIsHome + "s phone on local network")}
+end 
+
+
+rule "halPIR motion restart timer"
+when
+        Item halPIR changed to ON
+then
+	if(timer===null) {
+            sendCommand(halPIR, ON)
+            logInfo("HALL SENSOR","HALPIR Triggered - timer NULL start timer halMotion ON")
+		timer = createTimer(now.plusSeconds(120)) [|
+                sendCommand(halPIR, OFF)
+                timer.cancel
+                timer = null
+		]
+	}
+        if(timer!==null) {
+                timer.cancel
+                timer = null
+                logInfo("HALL SENSOR","HALPIR Triggered - cancel timer - starting new timer")
+                timer = createTimer(now.plusSeconds(120)) [|
+                sendCommand(halPIR, OFF)
+            ]
+        }else{logInfo("HALL SENSOR","halPIR changed to ON timer not null or null - but doing fuck all") }
+end
+
+rule "SensorActivity_Hallway postUpdate"
+when 
+ Item halPIR received update
+then
+ val DateTime test = now.plusMinutes(0)
+
+        logInfo("HALL SENSOR","Last movement now at " + lastHallMovement.state)
+        lastHallMovement.postUpdate(new DateTimeType(test.toString))
+	SensorActivity_Hallway.postUpdate(new DateTimeType(Calendar::getInstance()))
+	if(Presence.state == OFF && halPIR.state == ON){
+	logInfo("HALL SENSOR","WEIRD WTF presence off and hallMotion on")
+	}
+end
+
+
+rule "LivingRoom Lights dim"
+when 
+        Time cron "0 30 22 1/1 * ? * ?"
+then
+        sendCommand(keukenWandLamp, 35)
+        Thread::sleep(300)
+	sendCommand(vloerlamp_woonkamer, 5.00)
+        Thread::sleep(300)
+	sendCommand(buitenlamp_achtertuin, 75.00)
+        Thread::sleep(300)
+        sendCommand(keukenWandLamp, 35)
+        Thread::sleep(300)
+        logInfo("LIVING LIGHTS DIM","Dim them")
+end
+
+
+rule "living lights off"
+when
+	Time cron "0 52 23 1/1 * ? * ?"
+then
+	sendCommand(keukenWandLamp, 0)
+	Thread::sleep(300)	
+	sendCommand(vloerlamp_woonkamer, OFF)
+        Thread::sleep(300)
+        sendCommand(toio,OFF)
+        Thread::sleep(300)
+        sendCommand(keukenWandLamp, 0)
+        Thread::sleep(300)
+	logInfo("LIVING LIGHTS OFF","OFF")
+end
+
+rule "Receiver on when tv on" 
+when
+        Item tv changed then
+        if (tv.state == OFF){
+                sendCommand(audio, OFF)
+                logInfo("Receiver","TV OFF received - Receiver off ")
+        }else{
+                sendCommand(audio, ON)
+                logInfo("Receiver","TV ON - turn Receiver on or leaving Receiver on for LP")
+        }
+end
+
+rule "Check last activity"
+when
+    Item Presence changed to OFF
+then
+
+        if (now.minusMinutes(45).isAfter((SensorActivity_Hallway.state as DateTimeType).calendar.timeInMillis)) {
+	logInfo("HALL SENSOR","Last activity over 1hr ago at "+ SensorActivity_Hallway.state + " Presence " + Presence.state)
+		if(audioKeuken.state == ON && Presence.state == OFF){sendCommand(audioKeuken, OFF)}
+        }else {sendCommand(Presence, ON)logInfo("HALL SENSOR","Turn Presence back ON recent activity found "+ SensorActivity_Hallway.state + " Presence " + Presence.state)}
+end
+
+rule "Doorbel Front Door" 
+when
+	Item voordeurBel changed 
+then
+	if (voordeurBel.state == ON && Presence.state == OFF){
+        sendMail("v7f4u3byzz8g@nmamail.net", "voordeurBel" , "voordeurBel ging af, niemand thuis")
+	logInfo("voordeurBel", "Doorbel rang closing switch")
+	}else{logInfo("voordeurBel", "Doorbel status change, but some was home or status to off")
+        sendMail("v7f4u3byzz8g@nmamail.net", "voordeurBel" , "voordeurBel ging af, wel thuis")}
+        Thread::sleep(1500)
+        sendCommand( voordeurBel, OFF)
+end
+

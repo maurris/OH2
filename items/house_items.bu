@@ -1,0 +1,55 @@
+Group gAll Group Status (gAll) Group living (gAll) Group slaapkamer (gAll) Group zolder (gAll) 
+Group living_tv_off (gAll) Group Lamps (gAll) Group Lamps_Living (gAll) Group gMobiles (gAll) 
+Group XBMC (gAll) Group gWeather (gAll) Group Network (gAll) Group hal (gAll) Group tuin 
+(gAll) Group keuken (gAll) Group livingPlafond (gAll) Group livingDimmers (gAll) Group slaapkamerMarie (gAll) Group mood (gAll) Group triggers (gAll) Group gAudio (gAll)
+Group SensorActivity1hr  "Sensor Activity (1hr)" Group SensorActivity24hr "Sensor Activity (24hrs)" Group sensor (gAll)
+
+Switch audioKeuken "audioKeuken" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#audioKeuken"}
+Switch audio "audio" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#audio"}
+Switch tv "tv" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#tv"}
+Dimmer keukenWandLamp "keukenWandLamp" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#keukenWandLamp"}
+Switch halPIR "halPIR" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#halPIR"}
+Switch toio "toio" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#toio"}
+
+Switch Connection_Check "Connection_Check" (Status, Network) { nh="www.nu.nl" } 
+Switch Connection_Modem "Connection_Modem" (Status, Network) { nh="192.168.11.1:80" } 
+Switch Presence "Presence" (gMobiles) 
+Switch phoneMaurice "MauriceThuis" (gMobiles) {nh="192.168.11.3"}
+Switch phoneJudith "JudithThuis" (gMobiles) {nh="192.168.11.7"}
+Switch AudioWoonkamer "AudioWoonkamer"	(gAudio) {nh="192.168.11.102"}
+Switch AudioKeuken "AudioKeuken" (gAudio) {nh="192.168.11.66"}
+String allPresence "At Home [%s]" (gMobiles)
+String Condition "Weer nu [%s]" {channel="weatherunderground:weather:local:forecastToday#conditions"}
+String Season "Season [%s]" (gWeather) {astro="astro:sun:local:season#name"}
+Number totalDayLight (gWeather) {channel="astro:sun:local:daylight#duration"}
+Switch presenceMau "presenceMau" (gMobiles)
+Switch presenceJu "presenceJu" (gMobiles)
+Dimmer vloerlamp_woonkamer { channel="tradfri:0220:gwdcefcabd5ae5:65537:brightness" }
+Dimmer buitenlamp_achtertuin { channel="tradfri:0220:gwdcefcabd5ae5:65538:brightness" }
+
+Switch MyDevice { channel="network:pingdevice:phone_Mau:online" }
+Number MyDeviceResponseTime { channel="network:pingdevice:phone_Mau:latency" }
+DateTime MyDeviceLastSeen { channel="network:pingdevice:phone_Mau:lastseen" }
+Switch phone_Mau (gMobiles) {channel="network:device:192_168_11_3:online"}
+Number phone_Mau_time {channel="network:device:192_168_11_3:time"}
+Switch phone_Ju (gMobiles) {channel="network:device:192_168_11_7:online"}
+Number phone_Ju_time {channel="network:device:192_168_11_7:time"}
+
+
+DateTime Sunset_TimeOld    "SunsetOld [%1$tH:%1$tM]" {channel="astro:sun:local:set#start"}
+DateTime lastHallMovement "Last Move [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"
+DateTime Sunset_TimeNew "SunsetNew [%1$td-%1$tm-%1$tY %1$tH:%1$tM:%1$tS]" {astro="planet=sun, type=set, property=start"}
+DateTime SensorActivity_Hallway "Hallway Sensor [%1$td-%1$tm-%1$tY %1$tH:%1$tM:%1$tS]" <clock> (SensorActivity1hr)
+
+DateTime LastUpdate "Last update [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" {weather="locationId=home, type=condition, property=lastUpdate"} 
+Number Temperature "Temp nu [%.2f °C]" {weather="locationId=home, type=temperature, property=current"} 
+String Temp_MinMax_Nu "Min/Max vandaag [%s °C]" {weather="locationId=home, forecast=0, type=temperature, property=minMax"} 
+String Temp_MinMax "Min/Max morgen [%s °C]" {weather="locationId=home, forecast=1, type=temperature, property=minMax"} 
+String Condition_Tomorrow "Weer morgen [%s]" {weather="locationId=home, forecast=1, type=condition, property=text"} 
+Number Precip_Probability "Neerslag nu [%d %%]" {weather="locationId=home, type=precipitation, property=probability"} 
+Number Precip_Tomorrow "Neerslag morgen [%d %%]" {weather="locationId=home, forecast=1, type=precipitation, property=probability"} 
+DateTime Moon_Full "Full moon [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" {astro="planet=moon, type=phase,property=full"}
+DateTime Sunset_Time    "Sunset [%1$tH:%1$tM]" {astro="planet=sun, type=set, property=end"}
+
+
+String strSunset "Sunset" <clock> (gWeather) {http="<[http://api.wunderground.com/api/188d82bd1f8bcc94/astronomy/q/NL/rijswijk.xml:21600000:XSLT(wunderground_sunset.xsl)]"}
