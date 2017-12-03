@@ -5,16 +5,6 @@ import org.joda.time
 var Timer timer = null
 var long last_change = now.millis
 
-
-rule "test"
-when 
-Item darkness received update
-then 
-        logInfo("test", "test send")
-//	sendCommand(keukenWandLamp, 15.00)
-        logInfo("test", "test ended")
-end
-
 rule "LivingRoom Lights morning"
 when
         Time cron "0 20 6 ? * MON,TUE,WED * ?" or
@@ -72,13 +62,13 @@ when
 	Item darkness changed to ON
 then
 	logInfo("LIVING LIGHTS","Apparently its dark now, so turning on some lights")
-        sendCommand(keukenWandLamp, 70)
+        sendCommand(keukenWandLamp, 60)
         Thread::sleep(300)
 	sendCommand(vloerlamp_woonkamer,75.00)
         Thread::sleep(300)
         sendCommand(toio,ON)
         Thread::sleep(300)
-        sendCommand(keukenWandLamp, 70)
+        sendCommand(keukenWandLamp, 60)
 end
 
 rule "Periodically check presence" 
@@ -92,6 +82,7 @@ then
 		) {
                         logInfo("PresenceCheck", "Presence to OFF, no phones within reach and last registered activity at " + SensorActivity_Hallway.state)
                                 sendCommand(Presence, OFF)
+        			sendMail("v7f4u3byzz8g@nmamail.net", "Presence" , "Presence changed to off")
                 }else
         		{logInfo("PresenceCheck", "Presence ON, phones MauJu states: " + phoneMaurice.state +phoneJudith.state)}
         }
@@ -109,7 +100,7 @@ then
 	if (phoneMaurice.state == ON) {whoIsHome = "Maurice"}
 	if (phoneJudith.state == ON) {whoIsHome = "Judith"}
 	if (phoneMaurice.state == ON && phoneJudith.state == ON) {whoIsHome = "Both"}
-        if(phoneMaurice.state == ON || phoneJudith.state == ON) {
+        if ((phoneMaurice.state == ON || phoneJudith.state == ON) && (Presence.state != ON)) {
                 logInfo("PresenceCheck", "Presence to ON, back home is " + whoIsHome)
                 sendCommand(Presence, ON)
  	var DateTime testme = now.plusMinutes(0)
@@ -159,17 +150,29 @@ end
 
 rule "LivingRoom Lights dim"
 when 
-        Time cron "0 30 22 1/1 * ? * ?"
+        Time cron "0 30 22 1/1 * ? * ?" or
+        Time cron "0 05 20 1/1 * ? * ?"
 then
-        sendCommand(keukenWandLamp, 35)
+
+	if (keukenWandLamp.state > 40){
+        sendCommand(keukenWandLamp, 40)
         Thread::sleep(300)
-	sendCommand(vloerlamp_woonkamer, 5.00)
+        sendCommand(vloerlamp_woonkamer, 25.00)
+        Thread::sleep(300)
+        sendCommand(keukenWandLamp, 40)
+        Thread::sleep(300)
+        logInfo("LIVING LIGHTS DIM1","Dim them")
+	} else{
+        sendCommand(keukenWandLamp, 30)
+        Thread::sleep(300)
+	sendCommand(vloerlamp_woonkamer, 3.00)
         Thread::sleep(300)
 	sendCommand(buitenlamp_achtertuin, 75.00)
         Thread::sleep(300)
-        sendCommand(keukenWandLamp, 35)
+        sendCommand(keukenWandLamp, 30)
         Thread::sleep(300)
-        logInfo("LIVING LIGHTS DIM","Dim them")
+        logInfo("LIVING LIGHTS DIM2","Dim them")
+	}
 end
 
 
@@ -213,7 +216,7 @@ end
 
 rule "Doorbel Front Door" 
 when
-	Item voordeurBel changed 
+	Item voordeurBel changed from OFF to ON
 then
 	if (voordeurBel.state == ON && Presence.state == OFF){
         sendMail("v7f4u3byzz8g@nmamail.net", "voordeurBel" , "voordeurBel ging af, niemand thuis")
