@@ -2,7 +2,7 @@ Group gAll Group Status (gAll) Group living (gAll) Group slaapkamer (gAll) Group
 Group living_tv_off (gAll) Group Lamps (gAll) Group Lamps_Living (gAll) Group gMobiles (gAll)
 Group XBMC (gAll) Group gWeather (gAll) Group Network (gAll) Group hal (gAll) Group tuin
 (gAll) Group keuken (gAll) Group livingPlafond (gAll) Group livingDimmers (gAll) Group slaapkamerMarie (gAll) Group mood (gAll) Group triggers (gAll) Group gAudio (gAll)
-Group SensorActivity1hr  "Sensor Activity (1hr)" Group SensorActivity24hr "Sensor Activity (24hrs)" Group sensor (gAll)
+Group SensorActivity1hr  "Sensor Activity (1hr)" Group SensorActivity24hr "Sensor Activity (24hrs)" Group sensor (gAll) Group kerst (gAll)
 
 Switch audioKeuken "audioKeuken" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#audioKeuken"}
 Switch audio "audio" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#audio"}
@@ -12,6 +12,9 @@ Switch toio "toio" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#
 Dimmer keukenWandLamp "keukenWandLamp" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#keukenWandLamp"}
 Switch voordeurBel "voordeurBel" (Status) {pilight="kaku#deurbel"}
 Switch darkness "darkness" (Lamps)
+Switch kerstboom "kerstboom" (Lamps) {pilight="kaku#kerstboom"}
+Switch kerstster "kerstster" (Lamps) {pilight="kaku#kerstster"}
+Dimmer kerstboom_hal "kerstboom_hal" (Lamps) {pilight="kaku#kerstboom_hal"}
 
 Dimmer CC_Keuken_Volume { channel="chromecast:audio:2e7f499f3e1069b46d7d5a8bfdb96607:volume" }
 Player CC_Keuken_Player { channel="chromecast:audio:2e7f499f3e1069b46d7d5a8bfdb96607:control" }
@@ -19,6 +22,16 @@ Dimmer CC_Living_Volume { channel="chromecast:audio:a05f4b76b6f428a2e319e6aae74f
 Player CC_Living_Player { channel="chromecast:audio:a05f4b76b6f428a2e319e6aae74f284c:control" }
 Player CC_Slaapkamer_Player { channel="chromecast:chromecast:4a8ac0e7:control" }
 Dimmer CC_Slaapkamer_Volume { channel="chromecast:chromecast:4a8ac0e7:volume" }
+String CC_Living_playuri { channel="chromecast:audio:a05f4b76b6f428a2e319e6aae74f284:playuri" }
+String CC_Keuken_playuri { channel="chromecast:audio:2e7f499f3e1069b46d7d5a8bfdb96607:playuri" }
+Dimmer CC_Beneden_Alle_Volume { channel="chromecast:audiogroup:c7b1bd14-e90f-4987-b2bf-3d2401f2f01e:volume" }
+Player CC_Beneden_Alle_Player { channel="chromecast:audiogroup:c7b1bd14-e90f-4987-b2bf-3d2401f2f01e:control" }
+String CC_Beneden_Alle_playuri { channel="chromecast:audiogroup:c7b1bd14-e90f-4987-b2bf-3d2401f2f01e:playuri" }
+String BothCC
+
+String HarmonyHub "hHub Activity [%s]"   { channel="harmonyhub:hub:HarmonyHub:currentActivity" }
+String HarmonyTV "HarmonyTV"  { channel="harmonyhub:device:HarmonyHub:50380814:buttonPress" }
+String HarmonyAudio "HarmonyAudio"  { channel="harmonyhub:device:HarmonyHub:50380815:buttonPress" }
 
 Number IkeaHub	{ channel="tradfri:0830:gwdcefcabd5ae5:65536:battery_level" }
 Dimmer vloerlamp_woonkamer_color { channel="tradfri:0220:gwdcefcabd5ae5:65537:color_temperature" }
@@ -39,13 +52,10 @@ Switch presenceJu "presenceJu" (gMobiles)
 Dimmer vloerlamp_woonkamer { channel="tradfri:0220:gwdcefcabd5ae5:65537:brightness" }
 Dimmer buitenlamp_achtertuin { channel="tradfri:0220:gwdcefcabd5ae5:65538:brightness" }
 
-Switch MyDevice { channel="network:pingdevice:phone_Mau:online" }
-Number MyDeviceResponseTime { channel="network:pingdevice:phone_Mau:latency" }
-DateTime MyDeviceLastSeen { channel="network:pingdevice:phone_Mau:lastseen" }
-Switch phone_Mau (gMobiles) {channel="network:device:192_168_11_3:online"}
-Number phone_Mau_time {channel="network:device:192_168_11_3:time"}
-Switch phone_Ju (gMobiles) {channel="network:device:192_168_11_7:online"}
-Number phone_Ju_time {channel="network:device:192_168_11_7:time"}
+DateTime phone_Mau_LastSeen { channel="network:pingdevice:phone_Mau:lastseen" }
+DateTime phone_Ju_LastSeen { channel="network:pingdevice:phone_Ju:lastseen" }
+Switch phone_Mau (gMobiles) {channel="network:pingdevice:phone_Mau:online"}
+Switch phone_Ju (gMobiles) {channel="network:pingdevice:phone_Ju:online"}
 Switch CC_slaapkamer (Status) {channel="network:pingdevice:192_168_11_13:online"}
 
 // String  TV_KeyCode  { channel="samsungtv:tv:15752a01_0068_1000_9ee4_fcf13604f1f8:KEY_SOURCE" }
@@ -65,7 +75,7 @@ Number Precip_Probability "Neerslag nu [%d %%]" {weather="locationId=home, type=
 Number Precip_Tomorrow "Neerslag morgen [%d %%]" {weather="locationId=home, forecast=1, type=precipitation, property=probability"}
 DateTime Moon_Full "Full moon [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" {astro="planet=moon, type=phase,property=full"}
 DateTime Sunset_Time    "Sunset [%1$tH:%1$tM]" {astro="planet=sun, type=set, property=end"}
-
+Switch Test "Test"
 
 String strSunset "Sunset" <clock> (gWeather) {http="<[http://api.wunderground.com/api/188d82bd1f8bcc94/astronomy/q/NL/rijswijk.xml:21600000:XSLT(wunderground_sunset.xsl)]"}
 
