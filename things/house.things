@@ -22,3 +22,5 @@ Thing weatherunderground:weather:INBBERKE2 "INBBERKE2" [ apikey="188d82bd1f8bcc9
 network:pingdevice:phone_Mau [ hostname="192.168.11.3" ]
 network:pingdevice:phone_Ju [ hostname="192.168.11.7" ]
 network:pingdevice:CC_slaapkamer [ hostname="192.168.11.13" ]
+network:pingdevice:maurice-mbp [ hostname="192.168.11.10" ]
+network:pingdevice:televisie [ hostname="192.168.11.4" ]

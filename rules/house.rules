@@ -5,6 +5,51 @@ import org.joda.time
 var Timer timer = null
 var long last_change = now.millis
 
+rule "HeartbeatHub"
+when
+	Time cron "0 0/30 * ? * * * ?"
+then
+	if (tv.state == ON) {
+	HarmonyAudio.sendCommand("InputTv")
+	}else{HarmonyAudio.sendCommand("InputCd")}
+	logInfo("heartbeatHub","heartbeadHub")
+end
+
+rule 	"AudioChannel"
+when
+	Item Test changed or
+	Item CC_Keuken_Player changed or
+	Thing "Chromecast:audiogroup:c7b1bd14-e90f-4987-b2bf-3d2401f2f01e" changed from OFFLINE to ONLINE or
+	Item audioKeuken changed from OFF to ON
+then
+	if (tv.state == OFF){
+		audio.sendCommand(ON)
+		Thread::sleep(2500)
+		HarmonyAudio.sendCommand("InputCd")
+		logInfo("Audio", "AudioChannel to CD completed")
+	}else{logInfo("Audio","TV on not changing audio channel")}
+end
+
+rule "Chromecasts"
+when
+	Item CC_Living_Player changed from NULL to PLAY or
+        Item CC_Living_Player changed from STOP to PLAY or
+        Item CC_Keuken_Player changed from NULL to PLAY or
+        Item CC_Keuken_Player changed from STOP to PLAY or
+        Item CC_Beneden_Alle_Player changed from NULL to PLAY or
+        Item CC_Beneden_Alle_Player changed from STOP to PLAY or
+        Item CC_Beneden_Alle_Player changed from PAUSE to PLAY
+
+then 
+        logInfo("CCastSetVol","CC_Living_Player.state " + CC_Living_Player.state.toString)
+        logInfo("CCastSetVol","CC_Keuken_Player.state " + CC_Keuken_Player.state.toString)
+        logInfo("CCastSetVol","CC_Beneden_Alle_Player.state " + CC_Beneden_Alle_Player.state.toString)
+	sendCommand(CC_Living_Volume, 40)
+	sendCommand(CC_Keuken_Volume, 50)
+        sendCommand(CC_Beneden_Alle_Volume, 40)
+end
+
+
 rule "LivingRoom Lights morning"
 when
         Time cron "0 20 6 ? * MON,TUE,WED * ?" or
@@ -44,6 +89,7 @@ val Number devider = 1500
 val Number multiplier = 180
 var Number dayLength = totalDayLight.state
 var int seasonOffset = (((dayLength/devider)*multiplier)/1).intValue*1
+if (darkness.state === NULL) {sendCommand(darkness, ON)}
 
 if (Condition.state == "Mostly Cloudy" || Condition.state == "Overcast" || Condition.state == "Light Rain" || 
 Condition.state == "Heavy Rain" || Condition.state == "Haze" || Condition.state == "Fog")	seasonOffset = (seasonOffset + 60)
@@ -69,38 +115,39 @@ then
         sendCommand(toio,ON)
         Thread::sleep(300)
         sendCommand(keukenWandLamp, 60)
+	Thread::sleep(300)
+	sendCommand(kerstboom, ON)
 end
 
-rule "Periodically check presence" 
+rule "Presence to OFF check" 
 when
 	Time cron "0 0/20 * 1/1 * ? * ?" 
 then
         if (SensorActivity_Hallway.state === NULL || SensorActivity_Hallway.state == "") {SensorActivity_Hallway.postUpdate(new DateTimeType(Calendar::getInstance()))}
         if (Presence.state == ON)
         {
-                if(phoneMaurice.state == OFF && phoneJudith.state == OFF && (now.minusMinutes(45).isAfter((SensorActivity_Hallway.state as DateTimeType).calendar.timeInMillis))
+                if(phone_Mau.state == OFF && phone_Ju.state == OFF && (now.minusMinutes(45).isAfter((SensorActivity_Hallway.state as DateTimeType).calendar.timeInMillis))
 		) {
                         logInfo("PresenceCheck", "Presence to OFF, no phones within reach and last registered activity at " + SensorActivity_Hallway.state)
                                 sendCommand(Presence, OFF)
         			sendMail("v7f4u3byzz8g@nmamail.net", "Presence" , "Presence changed to off")
                 }else
-        		{logInfo("PresenceCheck", "Presence ON, phones MauJu states: " + phoneMaurice.state +phoneJudith.state)}
+        		{logInfo("PresenceCheck", "Presence ON, phones MauJu states: " + phone_Mau.state +phone_Ju.state)}
         }
         else
         	{logInfo("PresenceCheck", "Presence undefined or Presence NOT ON")}
 end 
 
-rule "Coming home" 
+rule "Presence to ON check" 
 when
-        Item gMobiles received update or
-	Item phoneMaurice changed or
-	Item phoneJudith changed
+	Item phone_Mau changed to ON or
+	Item phone_Ju changed to ON
 then
 	var String whoIsHome = "nobody"
-	if (phoneMaurice.state == ON) {whoIsHome = "Maurice"}
-	if (phoneJudith.state == ON) {whoIsHome = "Judith"}
-	if (phoneMaurice.state == ON && phoneJudith.state == ON) {whoIsHome = "Both"}
-        if ((phoneMaurice.state == ON || phoneJudith.state == ON) && (Presence.state != ON)) {
+	if (phone_Mau.state == ON) {whoIsHome = "Maurice"}
+	if (phone_Ju.state == ON) {whoIsHome = "Judith"}
+	if (phone_Mau.state == ON && phone_Ju.state == ON) {whoIsHome = "Both"}
+        if ((phone_Mau.state == ON || phone_Ju.state == ON) && (Presence.state != ON)) {
                 logInfo("PresenceCheck", "Presence to ON, back home is " + whoIsHome)
                 sendCommand(Presence, ON)
  	var DateTime testme = now.plusMinutes(0)
@@ -189,6 +236,8 @@ then
         sendCommand(keukenWandLamp, 0)
         Thread::sleep(300)
 	logInfo("LIVING LIGHTS OFF","OFF")
+	Thread::sleep(300)
+	sendCommand(kerstboom, OFF)
 end
 
 rule "Receiver on when tv on" 
@@ -197,9 +246,14 @@ when
         if (tv.state == OFF){
                 sendCommand(audio, OFF)
                 logInfo("Receiver","TV OFF received - Receiver off ")
+			if (keukenAudio.state == ON){
+			HarmonyAudio.sendCommand("InputCd")
+			}
         }else{
                 sendCommand(audio, ON)
+		Thread::sleep(2000)
                 logInfo("Receiver","TV ON - turn Receiver on or leaving Receiver on for LP")
+		HarmonyAudio.sendCommand("InputTV")
         }
 end
 
