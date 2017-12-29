@@ -74,7 +74,7 @@ if (darkness.state === NULL) {sendCommand(darkness, OFF)}
 if (daylight.state === NULL) {sendCommand(daylight, ON)}
 
 if (Condition.state == "Mostly Cloudy" || Condition.state == "Overcast" || Condition.state == "Light Rain" ||
-Condition.state == "Heavy Rain" || Condition.state == "Haze" || Condition.state == "Fog")       seasonOffset = (seasonOffset + 60)
+Condition.state == "Heavy Rain" || Condition.state == "Haze" || Condition.state == "Fog" || Condition.state == "Snow")       seasonOffset = (seasonOffset + 60)
 
 if ((now.plusMinutes(seasonOffset).isAfter((Sunset_TimeOld.state as DateTimeType).calendar.timeInMillis))&& darkness.state == OFF && (now.getHourOfDay > 15))
         {
