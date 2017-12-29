@@ -12,6 +12,7 @@ Switch toio "toio" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#
 Dimmer keukenWandLamp "keukenWandLamp" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#keukenWandLamp"}
 Switch voordeurBel "voordeurBel" (Status) {pilight="kaku#deurbel"}
 Switch darkness "darkness" (Lamps)
+Switch daylight "daylight" (Lamps)
 Switch kerstboom "kerstboom" (Lamps) {pilight="kaku#kerstboom"}
 Switch kerstster "kerstster" (Lamps) {pilight="kaku#kerstster"}
 Dimmer kerstboom_hal "kerstboom_hal" (Lamps) {pilight="kaku#kerstboom_hal"}
@@ -27,7 +28,6 @@ String CC_Keuken_playuri { channel="chromecast:audio:2e7f499f3e1069b46d7d5a8bfdb
 Dimmer CC_Beneden_Alle_Volume { channel="chromecast:audiogroup:c7b1bd14-e90f-4987-b2bf-3d2401f2f01e:volume" }
 Player CC_Beneden_Alle_Player { channel="chromecast:audiogroup:c7b1bd14-e90f-4987-b2bf-3d2401f2f01e:control" }
 String CC_Beneden_Alle_playuri { channel="chromecast:audiogroup:c7b1bd14-e90f-4987-b2bf-3d2401f2f01e:playuri" }
-String BothCC
 
 String HarmonyHub "hHub Activity [%s]"   { channel="harmonyhub:hub:HarmonyHub:currentActivity" }
 String HarmonyTV "HarmonyTV"  { channel="harmonyhub:device:HarmonyHub:50380814:buttonPress" }
@@ -58,9 +58,7 @@ Switch phone_Mau (gMobiles) {channel="network:pingdevice:phone_Mau:online"}
 Switch phone_Ju (gMobiles) {channel="network:pingdevice:phone_Ju:online"}
 Switch CC_slaapkamer (Status) {channel="network:pingdevice:192_168_11_13:online"}
 
-// String  TV_KeyCode  { channel="samsungtv:tv:15752a01_0068_1000_9ee4_fcf13604f1f8:KEY_SOURCE" }
-Dimmer  TV_Volume   { channel="samsungtv:tv:15752a01_0068_1000_9ee4_fcf13604f1f8:volume" }
-
+DateTime Sunrise_TimeOld    "SunriseOld [%1$tH:%1$tM]" {channel="astro:sun:local:rise#start"}
 DateTime Sunset_TimeOld    "SunsetOld [%1$tH:%1$tM]" {channel="astro:sun:local:set#start"}
 DateTime lastHallMovement "Last Move [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"
 DateTime Sunset_TimeNew "SunsetNew [%1$td-%1$tm-%1$tY %1$tH:%1$tM:%1$tS]" {astro="planet=sun, type=set, property=start"}
