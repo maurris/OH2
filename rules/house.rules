@@ -5,15 +5,6 @@ import org.joda.time
 var Timer timer = null
 var long last_change = now.millis
 
-rule "HeartbeatHub"
-when
-	Time cron "0 0/30 * ? * * * ?"
-then
-	if (tv.state == ON) {
-	HarmonyAudio.sendCommand("InputTv")
-	}else{HarmonyAudio.sendCommand("InputCd")}
-	logInfo("heartbeatHub","heartbeadHub")
-end
 
 rule 	"AudioChannel"
 when
@@ -67,43 +58,46 @@ then
 	sendCommand(buitenlamp_achtertuin, OFF)
         logInfo("LIVING LIGHTS MORNING","MORNING ON " + vloerlamp_woonkamer.state)
 	}else{
-       	sendCommand(keukenWandLamp, OFF)
-        Thread::sleep(300)
-	sendCommand(vloerlamp_woonkamer, OFF)
-        Thread::sleep(300)
-        sendCommand(toio,OFF)
-        Thread::sleep(300)
-	sendCommand(buitenlamp_achtertuin, OFF)
-	Thread::sleep(300)
-	sendCommand(darkness, OFF)
-        Thread::sleep(300)
-        sendCommand(keukenWandLamp, OFF)
 	logInfo("LIVING LIGHTS MORNING","MORNING OF")}
 end
 
-rule "darkness" 
+rule "darkness"
 when
-	Time cron "0 0/10 15-22 1/1 * ? * ?"
+        Time cron "0 0/10 15-22 1/1 * ? * ?" or
+        Time cron "0 0/10 06-11 1/1 * ? * ?"
 then
 val Number devider = 1500
 val Number multiplier = 180
 var Number dayLength = totalDayLight.state
 var int seasonOffset = (((dayLength/devider)*multiplier)/1).intValue*1
-if (darkness.state === NULL) {sendCommand(darkness, ON)}
+if (darkness.state === NULL) {sendCommand(darkness, OFF)}
+if (daylight.state === NULL) {sendCommand(daylight, ON)}
 
-if (Condition.state == "Mostly Cloudy" || Condition.state == "Overcast" || Condition.state == "Light Rain" || 
-Condition.state == "Heavy Rain" || Condition.state == "Haze" || Condition.state == "Fog")	seasonOffset = (seasonOffset + 60)
+if (Condition.state == "Mostly Cloudy" || Condition.state == "Overcast" || Condition.state == "Light Rain" ||
+Condition.state == "Heavy Rain" || Condition.state == "Haze" || Condition.state == "Fog")       seasonOffset = (seasonOffset + 60)
 
-if ((now.plusMinutes(seasonOffset).isAfter((Sunset_TimeOld.state as DateTimeType).calendar.timeInMillis))&& darkness.state == OFF)
-	{
-	logInfo("DARKNESS", "to ON " + now.plusMinutes(seasonOffset) + " after Sunset time " + 
+if ((now.plusMinutes(seasonOffset).isAfter((Sunset_TimeOld.state as DateTimeType).calendar.timeInMillis))&& darkness.state == OFF && (now.getHourOfDay > 15))
+        {
+        logInfo("DARKNESS", "to ON " + now.plusMinutes(seasonOffset) + " after Sunset time " +
 Sunset_TimeOld.state + " Weather: " +Condition.state + " seasonOffset = "+ seasonOffset+ " darkness = "+ darkness.state)
+        sendCommand(daylight, OFF)
+	Thread::sleep(300)
 	sendCommand(darkness, ON)
-}else{   
-	logInfo("DARKNESS", "not ON "+ now.plusMinutes(seasonOffset) + " NOT after Sunset " + Sunset_TimeOld.state + " Weather: " +Condition.state + " OR lights already on" + " seasonOffset = "+ seasonOffset+ " darkness = "+ darkness.state)}
+}else{
+        logInfo("DARKNESS", "not ON "+ now.plusMinutes(seasonOffset) + " NOT after Sunset " + Sunset_TimeOld.state + " Weather: " +Condition.state + " OR lights already on" + " seasonOffset = "+ seasonOffset+ " darkness = "+ darkness.state)}
+
+if ((now.plusMinutes(seasonOffset).isAfter((Sunrise_TimeOld.state as DateTimeType).calendar.timeInMillis))&& daylight.state == OFF && (now.getHourOfDay < 11))
+                {
+                logInfo("DAYLIGHT", "to ON " + now.plusMinutes(seasonOffset) + " after Sunrise time " +
+Sunset_TimeOld.state + " Weather: " +Condition.state + " seasonOffset = "+ seasonOffset+ " DAYLIGHT = "+ daylight.state)
+        sendCommand(darkness, OFF)        
+	Thread::sleep(300)
+	sendCommand(daylight, ON)
+}else{
+          logInfo("DAYLIGHT", "not ON "+ now.plusMinutes(seasonOffset) + " NOT after Sunrise " + Sunrise_TimeOld.state + " Weather: " +Condition.state + " OR lights already on" + " seasonOffset = "+ seasonOffset+ " DAYLIGHT = "+ daylight.state)}        
 end
 
-rule "LivingRoom Lights"
+rule "LivingRoom Lights ON"
 when
 	Item darkness changed to ON
 then
@@ -117,6 +111,24 @@ then
         sendCommand(keukenWandLamp, 60)
 	Thread::sleep(300)
 	sendCommand(kerstboom, ON)
+        Thread::sleep(300)
+       	sendCommand(buitenlamp_achtertuin, 75.00)
+end
+
+rule "LivingRoom Lights OFF"
+when
+        Item daylight changed to ON
+then
+        logInfo("LIVING LIGHTS","Apparently its light now, so turning off some lights")
+        sendCommand(keukenWandLamp, OFF)
+        Thread::sleep(300)
+        sendCommand(vloerlamp_woonkamer,OFF)
+        Thread::sleep(300)
+        sendCommand(toio,OFF)
+        Thread::sleep(300)
+        sendCommand(keukenWandLamp, OFF)
+        Thread::sleep(300)
+        sendCommand(buitenlamp_achtertuin, OFF)
 end
 
 rule "Presence to OFF check" 
@@ -213,8 +225,6 @@ then
         sendCommand(keukenWandLamp, 30)
         Thread::sleep(300)
 	sendCommand(vloerlamp_woonkamer, 3.00)
-        Thread::sleep(300)
-	sendCommand(buitenlamp_achtertuin, 75.00)
         Thread::sleep(300)
         sendCommand(keukenWandLamp, 30)
         Thread::sleep(300)

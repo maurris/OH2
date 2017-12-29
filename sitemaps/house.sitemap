@@ -64,6 +64,8 @@ sitemap house label="house"
                         Text item=Moon_Full
                         Text item=Sunset_Time
 			Switch item=Test label="Test"
+			Switch item=darkness
+			Switch item=daylight
                         }
                 }
 }
