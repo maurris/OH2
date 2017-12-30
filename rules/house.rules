@@ -44,9 +44,7 @@ end
 rule "LivingRoom Lights morning"
 when
         Time cron "0 20 6 ? * MON,TUE,WED * ?" or
-        Time cron "0 0 7 ? * THU,FRI,SAT,SUN * ?" or
-        Time cron "0 0 9 ? * THU,FRI,SAT,SUN * ?" or
-        Time cron "0 30 8 ? * MON,TUE,WED * ?"
+        Time cron "0 0 7 ? * THU,FRI,SAT,SUN * ?" 
 then
 	if (vloerlamp_woonkamer.state < 80.00) {
         sendCommand(vloerlamp_woonkamer, 85.00)
@@ -70,6 +68,7 @@ val Number devider = 1500
 val Number multiplier = 180
 var Number dayLength = totalDayLight.state
 var int seasonOffset = (((dayLength/devider)*multiplier)/1).intValue*1
+var int seasonOffsetM = (180-seasonOffset)
 if (darkness.state === NULL) {sendCommand(darkness, OFF)}
 if (daylight.state === NULL) {sendCommand(daylight, ON)}
 
@@ -86,15 +85,15 @@ Sunset_TimeOld.state + " Weather: " +Condition.state + " seasonOffset = "+ seaso
 }else{
         logInfo("DARKNESS", "not ON "+ now.plusMinutes(seasonOffset) + " NOT after Sunset " + Sunset_TimeOld.state + " Weather: " +Condition.state + " OR lights already on" + " seasonOffset = "+ seasonOffset+ " darkness = "+ darkness.state)}
 
-if ((now.plusMinutes(seasonOffset).isAfter((Sunrise_TimeOld.state as DateTimeType).calendar.timeInMillis))&& daylight.state == OFF && (now.getHourOfDay < 11))
+if ((now.minusMinutes(seasonOffsetM).isAfter((Sunrise_TimeOld.state as DateTimeType).calendar.timeInMillis))&& daylight.state == OFF && (now.getHourOfDay < 11))
                 {
-                logInfo("DAYLIGHT", "to ON " + now.plusMinutes(seasonOffset) + " after Sunrise time " +
-Sunset_TimeOld.state + " Weather: " +Condition.state + " seasonOffset = "+ seasonOffset+ " DAYLIGHT = "+ daylight.state)
+                logInfo("DAYLIGHT", "to ON " + now.minusMinutes(seasonOffsetM) + " after Sunrise time " +
+Sunrise_TimeOld.state + " Weather: " +Condition.state + " seasonOffsetM = "+ seasonOffsetM+ " DAYLIGHT = "+ daylight.state)
         sendCommand(darkness, OFF)        
 	Thread::sleep(300)
 	sendCommand(daylight, ON)
 }else{
-          logInfo("DAYLIGHT", "not ON "+ now.plusMinutes(seasonOffset) + " NOT after Sunrise " + Sunrise_TimeOld.state + " Weather: " +Condition.state + " OR lights already on" + " seasonOffset = "+ seasonOffset+ " DAYLIGHT = "+ daylight.state)}        
+          logInfo("DAYLIGHT", "not ON "+ now.minusMinutes(seasonOffsetM) + " NOT after Sunrise " + Sunrise_TimeOld.state + " Weather: " +Condition.state + " OR lights already on" + " seasonOffsetM = "+ seasonOffsetM+ " DAYLIGHT = "+ daylight.state)}        
 end
 
 rule "LivingRoom Lights ON"
