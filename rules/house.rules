@@ -54,9 +54,13 @@ then
         sendCommand(toio,ON)
         Thread::sleep(300)
 	sendCommand(buitenlamp_achtertuin, OFF)
-        logInfo("LIVING LIGHTS MORNING","MORNING ON " + vloerlamp_woonkamer.state)
+        Thread::sleep(300)
+        logInfo("LIVING LIGHTS MORNING","DAYLIGHT ON " + vloerlamp_woonkamer.state)
+        sendCommand(darkness, OFF)
+        Thread::sleep(300)
+        sendCommand(daylight, ON)
 	}else{
-	logInfo("LIVING LIGHTS MORNING","MORNING OF")}
+	logInfo("LIVING LIGHTS MORNING","Do nothing")}
 end
 
 rule "darkness"
