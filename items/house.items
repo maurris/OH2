@@ -71,7 +71,7 @@ String Temp_MinMax "Min/Max morgen [%s °C]" {weather="locationId=home, forecast
 String Condition_Tomorrow "Weer morgen [%s]" {weather="locationId=home, forecast=1, type=condition, property=text"}
 Number Precip_Probability "Neerslag nu [%d %%]" {weather="locationId=home, type=precipitation, property=probability"}
 Number Precip_Tomorrow "Neerslag morgen [%d %%]" {weather="locationId=home, forecast=1, type=precipitation, property=probability"}
-DateTime Moon_Full "Full moon [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" {astro="planet=moon, type=phase,property=full"}
+DateTime MoonFull	"MoonFull"	{ channel="astro:moon:local:full#start" }
 DateTime Sunset_Time    "Sunset [%1$tH:%1$tM]" {astro="planet=sun, type=set, property=end"}
 Switch Test "Test"
 
