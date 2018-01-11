@@ -11,7 +11,8 @@ when
 	Item Test changed or
 	Item CC_Keuken_Player changed or
 	Thing "Chromecast:audiogroup:c7b1bd14-e90f-4987-b2bf-3d2401f2f01e" changed from OFFLINE to ONLINE or
-	Item audioKeuken changed from OFF to ON
+	Item audioKeuken changed from OFF to ON or
+	Item audio changed from OFF to ON
 then
 	if (tv.state == OFF){
 		audio.sendCommand(ON)
@@ -46,53 +47,51 @@ when
         Time cron "0 20 6 ? * MON,TUE,WED * ?" or
         Time cron "0 0 7 ? * THU,FRI,SAT,SUN * ?" 
 then
-	if (vloerlamp_woonkamer.state < 80.00) {
-        sendCommand(vloerlamp_woonkamer, 85.00)
+        logInfo("LIVING LIGHTS MORNING","TURN DAYLIGHT ON " + vloerlamp_woonkamer.state)
+	sendCommand(vloerlamp_woonkamer, 85.00)
         Thread::sleep(300)
 	sendCommand(keukenWandLamp, 65)
         Thread::sleep(300)
         sendCommand(toio,ON)
         Thread::sleep(300)
 	sendCommand(buitenlamp_achtertuin, OFF)
-        Thread::sleep(300)
-        logInfo("LIVING LIGHTS MORNING","DAYLIGHT ON " + vloerlamp_woonkamer.state)
-        sendCommand(darkness, OFF)
-        Thread::sleep(300)
-        sendCommand(daylight, ON)
-	}else{
-	logInfo("LIVING LIGHTS MORNING","Do nothing")}
 end
 
 rule "darkness"
 when
         Time cron "0 0/10 15-22 1/1 * ? * ?" or
-        Time cron "0 0/10 06-11 1/1 * ? * ?"
+        Time cron "0 0/10 06-11 1/1 * ? * ?" or
+	Item Test changed
 then
 val Number devider = 1500
 val Number multiplier = 180
 var Number dayLength = totalDayLight.state
 var int seasonOffset = (((dayLength/devider)*multiplier)/1).intValue*1
 var int seasonOffsetM = (180-seasonOffset)
-if (darkness.state === NULL) {sendCommand(darkness, OFF)}
-if (daylight.state === NULL) {sendCommand(daylight, ON)}
+var hourOfDay = now.getHourOfDay
+if (darkness.state === NULL || daylight.state === NULL) {
+	sendCommand(darkness, ON) 
+	sendCommand(daylight, OFF)
+	logInfo("DARKNESS","darkness on daylight off" + darkness.state + daylight.state + hourOfDay)
+	}
 
 if (Condition.state == "Mostly Cloudy" || Condition.state == "Overcast" || Condition.state == "Light Rain" ||
 Condition.state == "Heavy Rain" || Condition.state == "Haze" || Condition.state == "Fog" || Condition.state == "Snow")       seasonOffset = (seasonOffset + 60)
 
-if ((now.plusMinutes(seasonOffset).isAfter((Sunset_TimeOld.state as DateTimeType).calendar.timeInMillis))&& darkness.state == OFF && (now.getHourOfDay > 15))
+if ((now.plusMinutes(seasonOffset).isAfter((Sunset_TimeOld.state as DateTimeType).calendar.timeInMillis))&& darkness.state == OFF && (hourOfDay > 14))
         {
         logInfo("DARKNESS", "to ON " + now.plusMinutes(seasonOffset) + " after Sunset time " +
-Sunset_TimeOld.state + " Weather: " +Condition.state + " seasonOffset = "+ seasonOffset+ " darkness = "+ darkness.state)
+Sunset_TimeOld.state + " Weather: " +Condition.state + " seasonOffset = "+ seasonOffset+ " darkness = "+ darkness.state + " HourOfDay = " + hourOfDay)
         sendCommand(daylight, OFF)
 	Thread::sleep(300)
 	sendCommand(darkness, ON)
 }else{
         logInfo("DARKNESS", "not ON "+ now.plusMinutes(seasonOffset) + " NOT after Sunset " + Sunset_TimeOld.state + " Weather: " +Condition.state + " OR lights already on" + " seasonOffset = "+ seasonOffset+ " darkness = "+ darkness.state)}
 
-if ((now.minusMinutes(seasonOffsetM).isAfter((Sunrise_TimeOld.state as DateTimeType).calendar.timeInMillis))&& daylight.state == OFF && (now.getHourOfDay < 11))
+if ((now.minusMinutes(seasonOffsetM).isAfter((Sunrise_TimeOld.state as DateTimeType).calendar.timeInMillis))&& daylight.state == OFF && (hourOfDay < 11))
                 {
                 logInfo("DAYLIGHT", "to ON " + now.minusMinutes(seasonOffsetM) + " after Sunrise time " +
-Sunrise_TimeOld.state + " Weather: " +Condition.state + " seasonOffsetM = "+ seasonOffsetM+ " DAYLIGHT = "+ daylight.state)
+Sunrise_TimeOld.state + " Weather: " +Condition.state + " seasonOffsetM = "+ seasonOffsetM+ " DAYLIGHT = "+ daylight.state + " HourOfDay = " + now.hourOfDay)
         sendCommand(darkness, OFF)        
 	Thread::sleep(300)
 	sendCommand(daylight, ON)
@@ -102,9 +101,9 @@ end
 
 rule "LivingRoom Lights ON"
 when
-	Item darkness changed to ON
+	Item darkness changed from OFF to ON
 then
-	logInfo("LIVING LIGHTS","Apparently its dark now, so turning on some lights")
+	logInfo("LIVING LIGHTS","Apparently its dark now, LIGHTS ON")
         sendCommand(keukenWandLamp, 60)
         Thread::sleep(300)
 	sendCommand(vloerlamp_woonkamer,75.00)
@@ -120,9 +119,9 @@ end
 
 rule "LivingRoom Lights OFF"
 when
-        Item daylight changed to ON
+        Item daylight changed from OFF to ON
 then
-        logInfo("LIVING LIGHTS","Apparently its light now, so turning off some lights")
+        logInfo("LIVING LIGHTS","Apparently its light now, LIGHTS OFF")
         sendCommand(keukenWandLamp, OFF)
         Thread::sleep(300)
         sendCommand(vloerlamp_woonkamer,OFF)
@@ -146,6 +145,7 @@ then
                         logInfo("PresenceCheck", "Presence to OFF, no phones within reach and last registered activity at " + SensorActivity_Hallway.state)
                                 sendCommand(Presence, OFF)
         			sendMail("v7f4u3byzz8g@nmamail.net", "Presence" , "Presence changed to off")
+				sendCommand(keukenAudio, OFF)
                 }else
         		{logInfo("PresenceCheck", "Presence ON, phones MauJu states: " + phone_Mau.state +phone_Ju.state)}
         }

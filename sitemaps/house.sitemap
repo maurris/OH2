@@ -61,8 +61,9 @@ sitemap house label="house"
                         Text item=Condition_Tomorrow icon="sun_clouds"
                         Text item=Precip_Probability icon="climate"
                         Text item=Precip_Tomorrow icon="climate"
-                        Text item=Moon_Full
-                        Text item=Sunset_Time
+                        Text item=MoonFull label="Moon Phase"
+                        Text item=Sunset_TimeOld label="Sunset"
+			Text item=Sunrise_TimeOld label="Sunrise"
 			Switch item=Test label="Test"
 			Switch item=darkness
 			Switch item=daylight
