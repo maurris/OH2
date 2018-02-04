@@ -13,9 +13,6 @@ sitemap house label="house"
 		Slider item=vloerlamp_woonkamer_color visibility=[vloerlamp_woonkamer>95]
                 Slider item=keukenWandLamp label="keukenWandLamp" icon="light"
 		Text item=IkeaHub label="IkeaHub_Battery_LOW" visibility=[IkeaHub<15] icon="lowbattery"
-                Switch item=kerstboom label="Kerstboom" icon="light"
-                Switch item=kerstster label="Kerstster" icon="light"
-		Slider item=kerstboom_hal label="Kerstboom Hal" icon="light"
 	}
     Frame label="ChromeCasts"
         {
