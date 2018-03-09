@@ -294,3 +294,19 @@ then
         sendCommand( voordeurBel, OFF)
 end
 
+rule "Kobus light aan"
+when
+        Time cron "0 30 6 ? * MON,TUE,THU,FRI * ?" or
+        Time cron "0 20 7 ? * WED,SAT,SUN * ?"
+then
+        sendCommand(kobus_slaapkamer,55.00)	
+        logInfo("Kobus", "Kobus aan")
+end
+
+rule "Kobus light uit"
+when
+        Time cron "0 00 8 ? * * * ?"
+then
+        sendCommand(kobus_slaapkamer, OFF)
+        logInfo("Kobus", "Kobus uit")
+end
