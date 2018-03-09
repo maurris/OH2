@@ -13,9 +13,6 @@ sitemap house label="house"
 		Slider item=vloerlamp_woonkamer_color visibility=[vloerlamp_woonkamer>95]
                 Slider item=keukenWandLamp label="keukenWandLamp" icon="light"
 		Text item=IkeaHub label="IkeaHub_Battery_LOW" visibility=[IkeaHub<15] icon="lowbattery"
-                Switch item=kerstboom label="Kerstboom" icon="light"
-                Switch item=kerstster label="Kerstster" icon="light"
-		Slider item=kerstboom_hal label="Kerstboom Hal" icon="light"
 	}
     Frame label="ChromeCasts"
         {
@@ -27,11 +24,15 @@ sitemap house label="house"
                 Default item=CC_Living_Player label="CC_Living_Control" icon="receiver" visibility=[CC_Living_Player=="PLAY"]
 		Default item=CC_Beneden_Alle_Player label="CC_LivingAlle_Control" icon="receiver" visibility=[CC_Beneden_Alle_Player=="PLAY"]
 	}
-    Frame label="Slaapkamer master" icon="firstfloor" visibility=[CC_slaapkamer==ON]
+    Frame label="Kobus Slaapkamer" icon="light"
         {
-                Slider item=CC_Slaapkamer_Volume label="CC_Slaapkamer_Volume" icon="soundvolume" visibility=[CC_slaapkamer==ON]
-                Default item=CC_Slaapkamer_Player label="CC_Slaapkamer_Control" icon="screen" visibility=[CC_slaapkamer==ON]
+                Slider item=kobus_slaapkamer label="Kobus wakeup [%.1f %%]" icon="light"
         }        
+    Frame label="Kinderkamer" icon="screen" visibility=[CC_slaapkamer==ON]
+        {
+                Slider item=CC_Slaapkamer_Volume label="CC_kinderkamer_Volume" icon="soundvolume"
+                Default item=CC_Slaapkamer_Player label="CC_kinderkamer_Control" icon="screen"
+        }
     Frame label="Presence"
         {
                 Text item=lastHallMovement label="Hall Motion [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" icon="motion"
