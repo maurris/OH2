@@ -32,6 +32,8 @@ String CC_Beneden_Alle_playuri { channel="chromecast:audiogroup:c7b1bd14-e90f-49
 String HarmonyHub "hHub Activity [%s]"   { channel="harmonyhub:hub:HarmonyHub:currentActivity" }
 String HarmonyTV "HarmonyTV"  { channel="harmonyhub:device:HarmonyHub:50380814:buttonPress" }
 String HarmonyAudio "HarmonyAudio"  { channel="harmonyhub:device:HarmonyHub:50380815:buttonPress" }
+String tvState "tvState"
+String tvControl "tvControl"
 
 Number IkeaHub	{ channel="tradfri:0830:gwdcefcabd5ae5:65536:battery_level" }
 Dimmer vloerlamp_woonkamer_color { channel="tradfri:0220:gwdcefcabd5ae5:65537:color_temperature" }
