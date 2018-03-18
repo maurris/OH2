@@ -55,6 +55,8 @@ then
         sendCommand(toio,ON)
         Thread::sleep(300)
 	sendCommand(buitenlamp_achtertuin, OFF)
+        Thread::sleep(300)
+	sendCommand(buitenlamp_voordeur, OFF)
 end
 
 rule "darkness"
@@ -115,6 +117,8 @@ then
 	sendCommand(kerstboom, ON)
         Thread::sleep(300)
        	sendCommand(buitenlamp_achtertuin, 75.00)
+        Thread::sleep(300)
+        sendCommand(buitenlamp_voordeur, 75.00)
 end
 
 rule "LivingRoom Lights OFF"
@@ -131,6 +135,8 @@ then
         sendCommand(keukenWandLamp, OFF)
         Thread::sleep(300)
         sendCommand(buitenlamp_achtertuin, OFF)
+        Thread::sleep(300)
+        sendCommand(buitenlamp_vloerlamp, OFF)
 end
 
 rule "Presence to OFF check" 

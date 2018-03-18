@@ -54,6 +54,7 @@ Switch presenceJu "presenceJu" (gMobiles)
 Dimmer vloerlamp_woonkamer { channel="tradfri:0220:gwdcefcabd5ae5:65537:brightness" }
 Dimmer buitenlamp_achtertuin { channel="tradfri:0220:gwdcefcabd5ae5:65538:brightness" }
 Dimmer kobus_slaapkamer { channel="tradfri:0100:gwdcefcabd5ae5:65539:brightness" }
+Dimmer buitenlamp_voordeur {channel="tradfri:0100:gwdcefcabd5ae5:65540:brightness" }
 
 DateTime phone_Mau_LastSeen { channel="network:pingdevice:phone_Mau:lastseen" }
 DateTime phone_Ju_LastSeen { channel="network:pingdevice:phone_Ju:lastseen" }

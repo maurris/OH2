@@ -50,6 +50,7 @@ sitemap house label="house"
     Frame label="tuin" icon="garden"
         {
                 Slider item=buitenlamp_achtertuin label="buitenlamp_achtertuin [%.1f %%]" icon="outdoorlight"
+                Slider item=buitenlamp_voordeur label="buitenlamp_voordeur [%.1f %%]" icon="outdoorlight"
         }
     Frame label="Weer" 
                 {
