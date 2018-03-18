@@ -118,7 +118,7 @@ then
         Thread::sleep(300)
        	sendCommand(buitenlamp_achtertuin, 75.00)
         Thread::sleep(300)
-        sendCommand(buitenlamp_voordeur, 75.00)
+        sendCommand(buitenlamp_voordeur, 60.00)
 end
 
 rule "LivingRoom Lights OFF"
@@ -225,7 +225,7 @@ then
 	if (keukenWandLamp.state > 40){
         sendCommand(keukenWandLamp, 40)
         Thread::sleep(300)
-        sendCommand(vloerlamp_woonkamer, 25.00)
+        sendCommand(vloerlamp_woonkamer, 20.00)
         Thread::sleep(300)
         sendCommand(keukenWandLamp, 40)
         Thread::sleep(300)
