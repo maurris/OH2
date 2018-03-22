@@ -321,11 +321,10 @@ rule "test tv"
 when
 	Item tvState received command
 then
-var hourOfDay = now.getHourOfDay
-
 	if (tv.state == OFF)
 	{
   	sendCommand(tv, ON)
+	tv.postUpdate(ON)
         logInfo("HarmonyTV", "Turn on TV and wait")  	
         Thread::sleep(9000)
 	}
@@ -336,18 +335,7 @@ var hourOfDay = now.getHourOfDay
         HarmonyTV.sendCommand("SmartHub")
   	Thread::sleep(9000)
   	HarmonyTV.sendCommand("Select")
-	  	if (hourOfDay > 19){
-        	Thread::sleep(17000)
-    		HarmonyTV.sendCommand("DirectionLeft")
-                Thread::sleep(1000)
-    		HarmonyTV.sendCommand("Select")
-  		}else {
-	                Thread::sleep(17000)
-                        HarmonyTV.sendCommand("DirectionRight")
-                        Thread::sleep(1000)
-                        HarmonyTV.sendCommand("Select")
-                        }
-		}
+	}
 
         if (tvState.state == "cast")
         {
@@ -369,5 +357,6 @@ var hourOfDay = now.getHourOfDay
         {
         logInfo("HarmonyTV", "switch to Guide")
         HarmonyTV.sendCommand("Guide")
+	tvState.postUpdate("TV")
         }
 end
