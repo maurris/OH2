@@ -36,8 +36,8 @@ then
         logInfo("CCastSetVol","CC_Living_Player.state " + CC_Living_Player.state.toString)
         logInfo("CCastSetVol","CC_Keuken_Player.state " + CC_Keuken_Player.state.toString)
         logInfo("CCastSetVol","CC_Beneden_Alle_Player.state " + CC_Beneden_Alle_Player.state.toString)
-	sendCommand(CC_Living_Volume, 40)
-	sendCommand(CC_Keuken_Volume, 50)
+	sendCommand(CC_Living_Volume, 50)
+	sendCommand(CC_Keuken_Volume, 40)
         sendCommand(CC_Beneden_Alle_Volume, 40)
 end
 
@@ -118,7 +118,7 @@ then
         Thread::sleep(300)
        	sendCommand(buitenlamp_achtertuin, 75.00)
         Thread::sleep(300)
-        sendCommand(buitenlamp_voordeur, 60.00)
+        sendCommand(buitenlamp_voordeur, 50.00)
 end
 
 rule "LivingRoom Lights OFF"
@@ -225,7 +225,7 @@ then
 	if (keukenWandLamp.state > 40){
         sendCommand(keukenWandLamp, 40)
         Thread::sleep(300)
-        sendCommand(vloerlamp_woonkamer, 20.00)
+        sendCommand(vloerlamp_woonkamer, 15.00)
         Thread::sleep(300)
         sendCommand(keukenWandLamp, 40)
         Thread::sleep(300)
@@ -233,7 +233,7 @@ then
 	} else{
         sendCommand(keukenWandLamp, 30)
         Thread::sleep(300)
-	sendCommand(vloerlamp_woonkamer, 3.00)
+	sendCommand(vloerlamp_woonkamer, 1.00)
         Thread::sleep(300)
         sendCommand(keukenWandLamp, 30)
         Thread::sleep(300)
@@ -255,8 +255,6 @@ then
         sendCommand(keukenWandLamp, 0)
         Thread::sleep(300)
 	logInfo("LIVING LIGHTS OFF","OFF")
-	Thread::sleep(300)
-	sendCommand(kerstboom, OFF)
 end
 
 rule "Receiver on when tv on" 
