@@ -262,6 +262,7 @@ when
         Item tv changed then
         if (tv.state == OFF){
                 sendCommand(audio, OFF)
+		tvState.postUpdate("")
                 logInfo("Receiver","TV OFF received - Receiver off ")
 			if (AudioKeuken.state == ON){
 			HarmonyAudio.sendCommand("InputCd")
@@ -357,9 +358,4 @@ then
         HarmonyTV.sendCommand("Guide")
 	tvState.postUpdate("TV")
         }
-end
-
-rule "tvState off"
-when Item tv received command OFF
-then tvState.postUpdate("")
 end
