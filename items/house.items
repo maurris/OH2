@@ -58,6 +58,10 @@ Dimmer buitenlamp_voordeur {channel="tradfri:0100:gwdcefcabd5ae5:65540:brightnes
 
 DateTime phone_Mau_LastSeen { channel="network:pingdevice:phone_Mau:lastseen" }
 DateTime phone_Ju_LastSeen { channel="network:pingdevice:phone_Ju:lastseen" }
+DateTime Mau_LastSeen "Mau_LastSeen [%1$td-%1$tm-%1$tY %1$tH:%1$tM:%1$tS]" { channel="network:pingdevice:phone_Mau:lastseen" }
+DateTime Ju_LastSeen "Ju_LastSeen [%1$td-%1$tm-%1$tY %1$tH:%1$tM:%1$tS]" { channel="network:pingdevice:phone_Ju:lastseen" }
+
+
 Switch phone_Mau (gMobiles) {channel="network:pingdevice:phone_Mau:online"}
 Switch phone_Ju (gMobiles) {channel="network:pingdevice:phone_Ju:online"}
 Switch CC_slaapkamer (Status) {channel="network:pingdevice:192_168_11_13:online"}

@@ -8,7 +8,6 @@ var long last_change = now.millis
 
 rule 	"AudioChannel"
 when
-	Item Test changed or
 	Item CC_Keuken_Player changed or
 	Thing "Chromecast:audiogroup:c7b1bd14-e90f-4987-b2bf-3d2401f2f01e" changed from OFFLINE to ONLINE or
 	Item audioKeuken changed from OFF to ON or
@@ -62,8 +61,7 @@ end
 rule "darkness"
 when
         Time cron "0 0/10 15-22 1/1 * ? * ?" or
-        Time cron "0 0/10 06-11 1/1 * ? * ?" or
-	Item Test changed
+        Time cron "0 0/10 06-11 1/1 * ? * ?" 
 then
 val Number devider = 1500
 val Number multiplier = 180
@@ -150,13 +148,14 @@ then
 		) {
                         logInfo("PresenceCheck", "Presence to OFF, no phones within reach and last registered activity at " + SensorActivity_Hallway.state)
                                 sendCommand(Presence, OFF)
-        			sendMail("v7f4u3byzz8g@nmamail.net", "Presence" , "Presence changed to off")
-				sendCommand(keukenAudio, OFF)
+				sendCommand(audioKeuken, OFF)
                 }else
         		{logInfo("PresenceCheck", "Presence ON, phones MauJu states: " + phone_Mau.state +phone_Ju.state)}
         }
         else
         	{logInfo("PresenceCheck", "Presence undefined or Presence NOT ON")}
+
+	if (now.minusMinutes(5).isAfter((Mau_LastSeen.state as DateTimeType).calendar.timeInMillis)){logInfo("PresenceCheck", "TEST MAU 5 min off")}
 end 
 
 rule "Presence to ON check" 
@@ -259,7 +258,8 @@ end
 
 rule "Receiver on when tv on" 
 when
-        Item tv changed then
+        Item tv changed 
+then
         if (tv.state == OFF){
                 sendCommand(audio, OFF)
 		tvState.postUpdate("")
@@ -320,13 +320,9 @@ rule "TV state"
 when
 	Item tvState received command
 then
-	if (tv.state == OFF)
-	{
   	sendCommand(tv, ON)
 	tv.postUpdate(ON)
         logInfo("HarmonyTV", "Turn on TV and wait")  	
-        Thread::sleep(9000)
-	}
 
 	if (tvState.state == "netFlix")
 	{

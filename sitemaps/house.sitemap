@@ -47,11 +47,15 @@ sitemap house label="house"
                 Text item=phone_Ju_LastSeen label="Phone_Ju Last seen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" visibility=[phone_Ju==OFF]
                 }
 	}
-    Frame label="tuin" icon="garden"
+    Frame label="Buitenlampen" icon="garden"
         {
-                Slider item=buitenlamp_achtertuin label="buitenlamp_achtertuin [%.1f %%]" icon="outdoorlight"
+                Slider item=buitenlamp_achtertuin label="buitenlamp_achtertuin [%.1f %%]" icon="garden"
                 Slider item=buitenlamp_voordeur label="buitenlamp_voordeur [%.1f %%]" icon="outdoorlight"
         }
+    Frame label="Printer zolder" icon="attic"
+     	{
+        	Switch item=kerstboom label="printer" icon="text"
+     	}
     Frame label="Weer" 
                 {
                 Text item=Temperature label="weerStation voorspelling" valuecolor=[Temperature<0="BLUE",Temperature>0="RED"] icon="wind"
