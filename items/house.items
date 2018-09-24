@@ -36,7 +36,7 @@ String tvState "tvState"
 String tvControl "tvControl"
 
 Number IkeaHub	{ channel="tradfri:0830:gwdcefcabd5ae5:65536:battery_level" }
-Dimmer vloerlamp_woonkamer_color { channel="tradfri:0220:gwdcefcabd5ae5:65537:color_temperature" }
+Dimmer vloerlamp_woonkamer_color { channel="tradfri:0220:gwdcefcabd5ae5:65541:color_temperature" }
 
 Switch Connection_Check "Connection_Check" (Status, Network) { nh="www.nu.nl" }
 Switch Connection_Modem "Connection_Modem" (Status, Network) { nh="192.168.11.1:80" }
@@ -51,8 +51,8 @@ String Season "Season [%s]" (gWeather) {astro="astro:sun:local:season#name"}
 Number totalDayLight (gWeather) {channel="astro:sun:local:daylight#duration"}
 Switch presenceMau "presenceMau" (gMobiles)
 Switch presenceJu "presenceJu" (gMobiles)
-Dimmer vloerlamp_woonkamer { channel="tradfri:0220:gwdcefcabd5ae5:65537:brightness" }
-Dimmer buitenlamp_achtertuin { channel="tradfri:0220:gwdcefcabd5ae5:65538:brightness" }
+Dimmer vloerlamp_woonkamer { channel="tradfri:0220:gwdcefcabd5ae5:65541:brightness" }
+Dimmer buitenlamp_achtertuin { channel="tradfri:0220:gwdcefcabd5ae5:65542:brightness" }
 Dimmer kobus_slaapkamer { channel="tradfri:0100:gwdcefcabd5ae5:65539:brightness" }
 Dimmer buitenlamp_voordeur {channel="tradfri:0100:gwdcefcabd5ae5:65540:brightness" }
 

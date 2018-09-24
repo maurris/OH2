@@ -35,9 +35,9 @@ then
         logInfo("CCastSetVol","CC_Living_Player.state " + CC_Living_Player.state.toString)
         logInfo("CCastSetVol","CC_Keuken_Player.state " + CC_Keuken_Player.state.toString)
         logInfo("CCastSetVol","CC_Beneden_Alle_Player.state " + CC_Beneden_Alle_Player.state.toString)
-	sendCommand(CC_Living_Volume, 50)
+	sendCommand(CC_Living_Volume, 60)
 	sendCommand(CC_Keuken_Volume, 40)
-        sendCommand(CC_Beneden_Alle_Volume, 40)
+        sendCommand(CC_Beneden_Alle_Volume, 50)
 end
 
 
@@ -76,7 +76,7 @@ if (darkness.state === NULL || daylight.state === NULL) {
 	}
 
 if (Condition.state == "Mostly Cloudy" || Condition.state == "Overcast" || Condition.state == "Light Rain" ||
-Condition.state == "Heavy Rain" || Condition.state == "Haze" || Condition.state == "Fog" || Condition.state == "Snow")       seasonOffset = (seasonOffset + 60)
+Condition.state == "Heavy Rain" || Condition.state == "Haze" || Condition.state == "Fog" || Condition.state == "Snow" || Condition.state == "Chance of Rain" || Condition.state == "UNDEF")       seasonOffset = (seasonOffset + 60)
 
 if ((now.plusMinutes(seasonOffset).isAfter((Sunset_TimeOld.state as DateTimeType).calendar.timeInMillis))&& darkness.state == OFF && (hourOfDay > 14))
         {
@@ -106,13 +106,11 @@ then
 	logInfo("LIVING LIGHTS","Apparently its dark now, LIGHTS ON")
         sendCommand(keukenWandLamp, 60)
         Thread::sleep(300)
-	sendCommand(vloerlamp_woonkamer,75.00)
+	sendCommand(vloerlamp_woonkamer,30.00)
         Thread::sleep(300)
         sendCommand(toio,ON)
         Thread::sleep(300)
         sendCommand(keukenWandLamp, 60)
-	Thread::sleep(300)
-	sendCommand(kerstboom, ON)
         Thread::sleep(300)
        	sendCommand(buitenlamp_achtertuin, 75.00)
         Thread::sleep(300)
@@ -131,10 +129,6 @@ then
         sendCommand(toio,OFF)
         Thread::sleep(300)
         sendCommand(keukenWandLamp, OFF)
-        Thread::sleep(300)
-        sendCommand(buitenlamp_achtertuin, OFF)
-        Thread::sleep(300)
-        sendCommand(buitenlamp_vloerlamp, OFF)
 end
 
 rule "Presence to OFF check" 
@@ -144,9 +138,14 @@ then
         if (SensorActivity_Hallway.state === NULL || SensorActivity_Hallway.state == "") {SensorActivity_Hallway.postUpdate(new DateTimeType(Calendar::getInstance()))}
         if (Presence.state == ON)
         {
-                if(phone_Mau.state == OFF && phone_Ju.state == OFF && (now.minusMinutes(45).isAfter((SensorActivity_Hallway.state as DateTimeType).calendar.timeInMillis))
-		) {
-                        logInfo("PresenceCheck", "Presence to OFF, no phones within reach and last registered activity at " + SensorActivity_Hallway.state)
+                if(
+		phone_Mau.state == OFF && phone_Ju.state == OFF 
+		&& (now.minusMinutes(45).isAfter((SensorActivity_Hallway.state as DateTimeType).calendar.timeInMillis))
+		&& (now.minusMinutes(45).isAfter((Mau_LastSeen.state as DateTimeType).calendar.timeInMillis)) 
+		&& (now.minusMinutes(45).isAfter((Ju_LastSeen.state as DateTimeType).calendar.timeInMillis))
+		)
+		 {
+                        logInfo("PresenceCheck", "Presence to OFF, no phones for 45mins within reach and last registered activity at " + SensorActivity_Hallway.state)
                                 sendCommand(Presence, OFF)
 				sendCommand(audioKeuken, OFF)
                 }else
@@ -154,8 +153,6 @@ then
         }
         else
         	{logInfo("PresenceCheck", "Presence undefined or Presence NOT ON")}
-
-	if (now.minusMinutes(5).isAfter((Mau_LastSeen.state as DateTimeType).calendar.timeInMillis)){logInfo("PresenceCheck", "TEST MAU 5 min off")}
 end 
 
 rule "Presence to ON check" 
@@ -224,19 +221,19 @@ then
 	if (keukenWandLamp.state > 40){
         sendCommand(keukenWandLamp, 40)
         Thread::sleep(300)
-        sendCommand(vloerlamp_woonkamer, 15.00)
+        sendCommand(vloerlamp_woonkamer, 10.00)
         Thread::sleep(300)
         sendCommand(keukenWandLamp, 40)
         Thread::sleep(300)
-        logInfo("LIVING LIGHTS DIM1","Dim them")
+        logInfo("LIVING LIGHTS DIM EVENING","Dim them")
 	} else{
         sendCommand(keukenWandLamp, 30)
         Thread::sleep(300)
-	sendCommand(vloerlamp_woonkamer, 1.00)
+	sendCommand(vloerlamp_woonkamer, 5.00)
         Thread::sleep(300)
         sendCommand(keukenWandLamp, 30)
         Thread::sleep(300)
-        logInfo("LIVING LIGHTS DIM2","Dim them")
+        logInfo("LIVING LIGHTS DIM MORNING","Dim them")
 	}
 end
 
@@ -297,23 +294,6 @@ then
         sendMail("v7f4u3byzz8g@nmamail.net", "voordeurBel" , "voordeurBel ging af, wel thuis")}
         Thread::sleep(1500)
         sendCommand( voordeurBel, OFF)
-end
-
-rule "Kobus light aan"
-when
-        Time cron "0 30 6 ? * MON,TUE,THU,FRI * ?" or
-        Time cron "0 20 7 ? * WED,SAT,SUN * ?"
-then
-        sendCommand(kobus_slaapkamer,55.00)	
-        logInfo("Kobus", "Kobus aan")
-end
-
-rule "Kobus light uit"
-when
-        Time cron "0 00 8 ? * * * ?"
-then
-        sendCommand(kobus_slaapkamer, OFF)
-        logInfo("Kobus", "Kobus uit")
 end
 
 rule "TV state"
