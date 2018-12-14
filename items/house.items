@@ -4,12 +4,12 @@ Group XBMC (gAll) Group gWeather (gAll) Group Network (gAll) Group hal (gAll) Gr
 (gAll) Group keuken (gAll) Group livingPlafond (gAll) Group livingDimmers (gAll) Group slaapkamerMarie (gAll) Group mood (gAll) Group triggers (gAll) Group gAudio (gAll)
 Group SensorActivity1hr  "Sensor Activity (1hr)" Group SensorActivity24hr "Sensor Activity (24hrs)" Group sensor (gAll) Group kerst (gAll)
 
-Switch audioKeuken "audioKeuken" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#audioKeuken"}
-Switch audio "audio" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#audio"}
-Switch tv "tv" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#tv"}
+Switch audioKeuken "audio kitchen" (Lamps, livingPlafond, living_tv_off, living) ["Switchable"] {pilight="kaku#audioKeuken"}
+Switch audio "living audio" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#audio"}
+Switch tv "tv" (Lamps, livingPlafond, living_tv_off, living) ["Switchable"] {pilight="kaku#tv"}
 Switch halPIR "halPIR" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#halPIR"}
-Switch toio "toio" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#toio"}
-Dimmer keukenWandLamp "keukenWandLamp" (Lamps, livingPlafond, living_tv_off, living) {pilight="kaku#keukenWandLamp"}
+Switch toio "flos light" (Lamps, livingPlafond, living_tv_off, living) ["Switchable"] {pilight="kaku#toio"}
+Dimmer keukenWandLamp "kitchen wall light" (Lamps, livingPlafond, living_tv_off, living) ["Switchable"] {pilight="kaku#keukenWandLamp"}
 Switch voordeurBel "voordeurBel" (Status) {pilight="kaku#deurbel"}
 Switch darkness "darkness" (Lamps)
 Switch daylight "daylight" (Lamps)
@@ -34,9 +34,14 @@ String HarmonyTV "HarmonyTV"  { channel="harmonyhub:device:HarmonyHub:50380814:b
 String HarmonyAudio "HarmonyAudio"  { channel="harmonyhub:device:HarmonyHub:50380815:buttonPress" }
 String tvState "tvState"
 String tvControl "tvControl"
+String HarmonyAudioUpString "Living Volume Up" (living) { channel="harmonyhub:device:HarmonyHub:50380815:buttonPress" }
+String HarmonyAudioDownString "Living Volume Down" (living) { channel="harmonyhub:device:HarmonyHub:50380815:buttonPress" }
+Switch HarmonyAudioUp "Tuner Up" (living) ["Switchable"]
+Switch HarmonyAudioDown "Tuner Down" (living) ["Switchable"]
+
 
 Number IkeaHub	{ channel="tradfri:0830:gwdcefcabd5ae5:65536:battery_level" }
-Dimmer vloerlamp_woonkamer_color { channel="tradfri:0220:gwdcefcabd5ae5:65541:color_temperature" }
+Dimmer vloerlamp_woonkamer_color "floorlight living color" { channel="tradfri:0220:gwdcefcabd5ae5:65541:color_temperature" }
 
 Switch Connection_Check "Connection_Check" (Status, Network) { nh="www.nu.nl" }
 Switch Connection_Modem "Connection_Modem" (Status, Network) { nh="192.168.11.1:80" }
@@ -51,16 +56,15 @@ String Season "Season [%s]" (gWeather) {astro="astro:sun:local:season#name"}
 Number totalDayLight (gWeather) {channel="astro:sun:local:daylight#duration"}
 Switch presenceMau "presenceMau" (gMobiles)
 Switch presenceJu "presenceJu" (gMobiles)
-Dimmer vloerlamp_woonkamer { channel="tradfri:0220:gwdcefcabd5ae5:65541:brightness" }
-Dimmer buitenlamp_achtertuin { channel="tradfri:0220:gwdcefcabd5ae5:65542:brightness" }
-Dimmer kobus_slaapkamer { channel="tradfri:0100:gwdcefcabd5ae5:65539:brightness" }
-Dimmer buitenlamp_voordeur {channel="tradfri:0100:gwdcefcabd5ae5:65540:brightness" }
+Dimmer vloerlamp_woonkamer "floorlight" ["Lighting"] { channel="tradfri:0100:gwdcefcabd5ae5:65547:brightness" }
+Dimmer buitenlamp_achtertuin "garden light" ["Lighting"] { channel="tradfri:0220:gwdcefcabd5ae5:65548:brightness" }
+Dimmer kobus_slaapkamer "kobus_slaapkamer" ["Lighting"] { channel="tradfri:0100:gwdcefcabd5ae5:65539:brightness" }
+Dimmer buitenlamp_voordeur "frontdoor light" ["Lighting"] {channel="tradfri:0220:gwdcefcabd5ae5:65546:brightness" }
 
 DateTime phone_Mau_LastSeen { channel="network:pingdevice:phone_Mau:lastseen" }
 DateTime phone_Ju_LastSeen { channel="network:pingdevice:phone_Ju:lastseen" }
 DateTime Mau_LastSeen "Mau_LastSeen [%1$td-%1$tm-%1$tY %1$tH:%1$tM:%1$tS]" { channel="network:pingdevice:phone_Mau:lastseen" }
 DateTime Ju_LastSeen "Ju_LastSeen [%1$td-%1$tm-%1$tY %1$tH:%1$tM:%1$tS]" { channel="network:pingdevice:phone_Ju:lastseen" }
-
 
 Switch phone_Mau (gMobiles) {channel="network:pingdevice:phone_Mau:online"}
 Switch phone_Ju (gMobiles) {channel="network:pingdevice:phone_Ju:online"}
@@ -85,3 +89,5 @@ Switch Test "Test"
 
 String strSunset "Sunset" <clock> (gWeather) {http="<[http://api.wunderground.com/api/188d82bd1f8bcc94/astronomy/q/NL/rijswijk.xml:21600000:XSLT(wunderground_sunset.xsl)]"}
 
+Switch inputTV "channel tv" ["Switchable"]
+Switch inputCD "channel cd" ["Switchable"]
