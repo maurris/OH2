@@ -8,10 +8,11 @@ var long last_change = now.millis
 
 rule 	"AudioChannel"
 when
-	Item CC_Keuken_Player changed or
-	Thing "Chromecast:audiogroup:c7b1bd14-e90f-4987-b2bf-3d2401f2f01e" changed from OFFLINE to ONLINE or
-	Item audioKeuken changed from OFF to ON or
-	Item audio changed from OFF to ON
+	Item audio changed to ON or
+	Thing "chromecast:audio:2e7f499f3e1069b46d7d5a8bfdb96607" changed or
+	Thing "chromecast:audiogroup:c7b1bd14-e90f-4987-b2bf-3d2401f2f01e" changed or
+	Item CC_Keuken_Player changed to PLAY or
+	Item CC_Beneden_Alle_Player changed to PLAY
 then
 	if (tv.state == OFF){
 		audio.sendCommand(ON)
@@ -25,9 +26,9 @@ rule "Chromecasts"
 when
 	Item CC_Living_Player changed from NULL to PLAY or
         Item CC_Living_Player changed from STOP to PLAY or
-        Item CC_Keuken_Player changed from NULL to PLAY or
+        Item CC_Keuken_Player received update PLAY or
         Item CC_Keuken_Player changed from STOP to PLAY or
-        Item CC_Beneden_Alle_Player changed from NULL to PLAY or
+        Item CC_Beneden_Alle_Player received update PLAY or
         Item CC_Beneden_Alle_Player changed from STOP to PLAY or
         Item CC_Beneden_Alle_Player changed from PAUSE to PLAY
 
@@ -35,9 +36,6 @@ then
         logInfo("CCastSetVol","CC_Living_Player.state " + CC_Living_Player.state.toString)
         logInfo("CCastSetVol","CC_Keuken_Player.state " + CC_Keuken_Player.state.toString)
         logInfo("CCastSetVol","CC_Beneden_Alle_Player.state " + CC_Beneden_Alle_Player.state.toString)
-	sendCommand(CC_Living_Volume, 60)
-	sendCommand(CC_Keuken_Volume, 40)
-        sendCommand(CC_Beneden_Alle_Volume, 50)
 end
 
 
@@ -106,7 +104,7 @@ then
 	logInfo("LIVING LIGHTS","Apparently its dark now, LIGHTS ON")
         sendCommand(keukenWandLamp, 60)
         Thread::sleep(300)
-	sendCommand(vloerlamp_woonkamer,30.00)
+	sendCommand(vloerlamp_woonkamer,60.00)
         Thread::sleep(300)
         sendCommand(toio,ON)
         Thread::sleep(300)
@@ -114,7 +112,7 @@ then
         Thread::sleep(300)
        	sendCommand(buitenlamp_achtertuin, 75.00)
         Thread::sleep(300)
-        sendCommand(buitenlamp_voordeur, 50.00)
+        sendCommand(buitenlamp_voordeur, 70.00)
 end
 
 rule "LivingRoom Lights OFF"
@@ -261,13 +259,10 @@ then
                 sendCommand(audio, OFF)
 		tvState.postUpdate("")
                 logInfo("Receiver","TV OFF received - Receiver off ")
-			if (AudioKeuken.state == ON){
-			HarmonyAudio.sendCommand("InputCd")
-			}
         }else{
                 sendCommand(audio, ON)
 		Thread::sleep(2000)
-                logInfo("Receiver","TV ON - turn Receiver on or leaving Receiver on for LP")
+                logInfo("Receiver","TV ON - turn Receiver to TV channel")
 		HarmonyAudio.sendCommand("InputTV")
         }
 end
@@ -334,4 +329,61 @@ then
         HarmonyTV.sendCommand("Guide")
 	tvState.postUpdate("TV")
         }
+end
+
+rule    "Alexa change inputCD"
+when
+        Item inputCD changed to ON
+then
+        if (audio.state == OFF){
+                audio.sendCommand(ON)
+                Thread::sleep(2500)
+                HarmonyAudio.sendCommand("InputCd")
+                logInfo("Audio", "AudioChannel to CD completed")
+                inputCD.sendCommand(OFF)
+        }else{
+        HarmonyAudio.sendCommand("InputCd")
+        logInfo("Audio","changing audio channel to CD")
+        inputCD.sendCommand(OFF)}
+end
+
+rule    "Alexa change inputTV"
+when
+        Item inputTV changed to ON
+then
+        if (audio.state == OFF){
+                audio.sendCommand(ON)
+                Thread::sleep(2500)
+                HarmonyAudio.sendCommand("InputTv")
+                logInfo("Audio", "AudioChannel to TV completed")
+                inputTV.sendCommand(OFF)
+        }else{
+        HarmonyAudio.sendCommand("InputTv")
+        logInfo("Audio","changing audio channel to TV")
+        inputTV.sendCommand(OFF)}
+end
+rule "Alexa volume up"
+when
+        Item HarmonyAudioUp changed to ON
+then
+                HarmonyAudioUpString.sendCommand("VolumeUp")
+                HarmonyAudioUpString.sendCommand("VolumeUp")
+                HarmonyAudioUpString.sendCommand("VolumeUp")
+                logInfo("Audio", "VolumeUp")
+                HarmonyAudioUpString.sendCommand("VolumeUp")
+                HarmonyAudioUpString.sendCommand("VolumeUp")
+                HarmonyAudioUp.sendCommand(OFF)
+end
+
+rule "Alexa volume down"
+when
+        Item HarmonyAudioDown changed to ON
+then
+                HarmonyAudioDownString.sendCommand("VolumeDown")
+                HarmonyAudioDownString.sendCommand("VolumeDown")
+                HarmonyAudioDownString.sendCommand("VolumeDown")
+                HarmonyAudioDownString.sendCommand("VolumeDown")
+                logInfo("Audio", "VolumeDown")
+                HarmonyAudioDownString.sendCommand("VolumeDown")
+                HarmonyAudioDown.sendCommand(OFF)
 end
