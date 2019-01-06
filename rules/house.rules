@@ -5,7 +5,6 @@ import org.joda.time
 var Timer timer = null
 var long last_change = now.millis
 
-
 rule 	"AudioChannel"
 when
 	Item audio changed to ON or
@@ -50,16 +49,13 @@ then
 	sendCommand(keukenWandLamp, 65)
         Thread::sleep(300)
         sendCommand(toio,ON)
-        Thread::sleep(300)
-	sendCommand(buitenlamp_achtertuin, OFF)
-        Thread::sleep(300)
-	sendCommand(buitenlamp_voordeur, OFF)
 end
 
 rule "darkness"
 when
         Time cron "0 0/10 15-22 1/1 * ? * ?" or
-        Time cron "0 0/10 06-11 1/1 * ? * ?" 
+        Time cron "0 0/10 06-11 1/1 * ? * ?" or 
+	Item Test changed
 then
 val Number devider = 1500
 val Number multiplier = 180
@@ -67,34 +63,43 @@ var Number dayLength = totalDayLight.state
 var int seasonOffset = (((dayLength/devider)*multiplier)/1).intValue*1
 var int seasonOffsetM = (180-seasonOffset)
 var hourOfDay = now.getHourOfDay
-if (darkness.state === NULL || daylight.state === NULL) {
+if (darkness.state === NULL || daylight.state === NULL) 
+{
+	if (hourOfDay > 14){
 	sendCommand(darkness, ON) 
 	sendCommand(daylight, OFF)
-	logInfo("DARKNESS","darkness on daylight off" + darkness.state + daylight.state + hourOfDay)
+	logInfo("state NULL FOUND","darkness on daylight off" + darkness.state + daylight.state + hourOfDay)
 	}
+	else{
+        sendCommand(darkness, OFF)
+        sendCommand(daylight, ON)
+        logInfo("state NULL FOUND","darkness off daylight on" + darkness.state + daylight.state + hourOfDay)
+	}
+}
 
 if (Condition.state == "Mostly Cloudy" || Condition.state == "Overcast" || Condition.state == "Light Rain" ||
 Condition.state == "Heavy Rain" || Condition.state == "Haze" || Condition.state == "Fog" || Condition.state == "Snow" || Condition.state == "Chance of Rain" || Condition.state == "UNDEF")       seasonOffset = (seasonOffset + 60)
 
 if ((now.plusMinutes(seasonOffset).isAfter((Sunset_TimeOld.state as DateTimeType).calendar.timeInMillis))&& darkness.state == OFF && (hourOfDay > 14))
         {
-        logInfo("DARKNESS", "to ON " + now.plusMinutes(seasonOffset) + " after Sunset time " +
+        logInfo("DARKNESS", "turned ON " + now.plusMinutes(seasonOffset) + " after Sunset time " +
 Sunset_TimeOld.state + " Weather: " +Condition.state + " seasonOffset = "+ seasonOffset+ " darkness = "+ darkness.state + " HourOfDay = " + hourOfDay)
         sendCommand(daylight, OFF)
 	Thread::sleep(300)
 	sendCommand(darkness, ON)
 }else{
-        logInfo("DARKNESS", "not ON "+ now.plusMinutes(seasonOffset) + " NOT after Sunset " + Sunset_TimeOld.state + " Weather: " +Condition.state + " OR lights already on" + " seasonOffset = "+ seasonOffset+ " darkness = "+ darkness.state)}
-
+        logInfo("DARKNESS", "not turned ON")
+}
 if ((now.minusMinutes(seasonOffsetM).isAfter((Sunrise_TimeOld.state as DateTimeType).calendar.timeInMillis))&& daylight.state == OFF && (hourOfDay < 11))
                 {
-                logInfo("DAYLIGHT", "to ON " + now.minusMinutes(seasonOffsetM) + " after Sunrise time " +
+                logInfo("DAYLIGHT", "turned ON " + now.minusMinutes(seasonOffsetM) + " after Sunrise time " +
 Sunrise_TimeOld.state + " Weather: " +Condition.state + " seasonOffsetM = "+ seasonOffsetM+ " DAYLIGHT = "+ daylight.state + " HourOfDay = " + now.hourOfDay)
         sendCommand(darkness, OFF)        
 	Thread::sleep(300)
 	sendCommand(daylight, ON)
 }else{
-          logInfo("DAYLIGHT", "not ON "+ now.minusMinutes(seasonOffsetM) + " NOT after Sunrise " + Sunrise_TimeOld.state + " Weather: " +Condition.state + " OR lights already on" + " seasonOffsetM = "+ seasonOffsetM+ " DAYLIGHT = "+ daylight.state)}        
+          logInfo("DAYLIGHT", "not turned ON")
+}
 end
 
 rule "LivingRoom Lights ON"
@@ -104,7 +109,7 @@ then
 	logInfo("LIVING LIGHTS","Apparently its dark now, LIGHTS ON")
         sendCommand(keukenWandLamp, 60)
         Thread::sleep(300)
-	sendCommand(vloerlamp_woonkamer,60.00)
+	sendCommand(vloerlamp_woonkamer, 55.00)
         Thread::sleep(300)
         sendCommand(toio,ON)
         Thread::sleep(300)
@@ -127,6 +132,10 @@ then
         sendCommand(toio,OFF)
         Thread::sleep(300)
         sendCommand(keukenWandLamp, OFF)
+        Thread::sleep(300)
+        sendCommand(buitenlamp_achtertuin, OFF)
+        Thread::sleep(300)
+        sendCommand(buitenlamp_voordeur, OFF)
 end
 
 rule "Presence to OFF check" 
@@ -145,7 +154,6 @@ then
 		 {
                         logInfo("PresenceCheck", "Presence to OFF, no phones for 45mins within reach and last registered activity at " + SensorActivity_Hallway.state)
                                 sendCommand(Presence, OFF)
-				sendCommand(audioKeuken, OFF)
                 }else
         		{logInfo("PresenceCheck", "Presence ON, phones MauJu states: " + phone_Mau.state +phone_Ju.state)}
         }
@@ -213,7 +221,7 @@ end
 rule "LivingRoom Lights dim"
 when 
         Time cron "0 30 22 1/1 * ? * ?" or
-        Time cron "0 05 20 1/1 * ? * ?"
+        Time cron "0 35 19 1/1 * ? * ?"
 then
 
 	if (keukenWandLamp.state > 40){
@@ -282,13 +290,18 @@ rule "Doorbel Front Door"
 when
 	Item voordeurBel changed from OFF to ON
 then
+var garageMotion = "garage"+now.toString ("HH:mm:ss")+".jpg"
+                var motionMsg = "door motion detected at "+ now.toString ("HH:mm:ss")
 	if (voordeurBel.state == ON && Presence.state == OFF){
-        sendMail("v7f4u3byzz8g@nmamail.net", "voordeurBel" , "voordeurBel ging af, niemand thuis")
+		executeCommandLine("wget http://192.168.11.16:88/cgi-bin/CGIProxy.fcgi?usr=garage01&pwd=5056Storiman&cmd=snapPicture2 -O /tmp/"+garageMotion, 1000)
+		Thread::sleep(3000)
+		sendMail("maurice@andesk.com", "doorbel alert "+now.toString ("HH:mm:ss"), motionMsg, "file:///tmp/" +garageMotion)
 	logInfo("voordeurBel", "Doorbel rang closing switch")
-	}else{logInfo("voordeurBel", "Doorbel status change, but some was home or status to off")
-        sendMail("v7f4u3byzz8g@nmamail.net", "voordeurBel" , "voordeurBel ging af, wel thuis")}
-        Thread::sleep(1500)
-        sendCommand( voordeurBel, OFF)
+	}else{	
+		logInfo("voordeurBel", "Doorbel status change, but someone was home or status to off")
+		sendCommand(CamMotionAlarm, ON)
+	        sendCommand( voordeurBel, OFF)
+		}
 end
 
 rule "TV state"
@@ -386,4 +399,29 @@ then
                 logInfo("Audio", "VolumeDown")
                 HarmonyAudioDownString.sendCommand("VolumeDown")
                 HarmonyAudioDown.sendCommand(OFF)
+end
+
+rule "Alexa Netflix"
+when
+        Item HarmonyNetflix changed to ON
+then
+                logInfo("TV", "Netflix")
+        	HarmonyTV.sendCommand("SmartHub")
+        	Thread::sleep(3000)
+        	HarmonyTV.sendCommand("Select")
+                HarmonyNetflix.sendCommand(OFF)
+end
+
+rule "Cam MotionAlert"
+when
+        Item CamMotionAlarm changed
+then
+                logInfo("CamMotionAlarm", "RED ALERT! Cam MotionAlarm")
+
+var garageMotion = "doorbel"+now.toString ("HH:mm:ss")+".jpg"
+var motionMsg = "door motion detected at "+ now.toString ("HH:mm:ss")
+executeCommandLine("wget http://192.168.11.16:88/cgi-bin/CGIProxy.fcgi?usr=garage01&pwd=5056Storiman&cmd=snapPicture2 -O /tmp/"+garageMotion, 1000)
+Thread::sleep(3000)
+sendMail("maurice@andesk.com", "doorbel alert "+now.toString ("HH:mm:ss"), motionMsg, "file:///tmp/" +garageMotion)
+sendNotification("mauricefrancke@gmail.com", "garageMotion")
 end

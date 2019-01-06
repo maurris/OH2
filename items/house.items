@@ -13,9 +13,6 @@ Dimmer keukenWandLamp "kitchen wall light" (Lamps, livingPlafond, living_tv_off,
 Switch voordeurBel "voordeurBel" (Status) {pilight="kaku#deurbel"}
 Switch darkness "darkness" (Lamps)
 Switch daylight "daylight" (Lamps)
-Switch kerstboom "kerstboom" (Lamps) {pilight="kaku#kerstboom"}
-Switch kerstster "kerstster" (Lamps) {pilight="kaku#kerstster"}
-Dimmer kerstboom_hal "kerstboom_hal" (Lamps) {pilight="kaku#kerstboom_hal"}
 
 Dimmer CC_Keuken_Volume { channel="chromecast:audio:2e7f499f3e1069b46d7d5a8bfdb96607:volume" }
 Player CC_Keuken_Player { channel="chromecast:audio:2e7f499f3e1069b46d7d5a8bfdb96607:control" }
@@ -38,7 +35,7 @@ String HarmonyAudioUpString "Living Volume Up" (living) { channel="harmonyhub:de
 String HarmonyAudioDownString "Living Volume Down" (living) { channel="harmonyhub:device:HarmonyHub:50380815:buttonPress" }
 Switch HarmonyAudioUp "Tuner Up" (living) ["Switchable"]
 Switch HarmonyAudioDown "Tuner Down" (living) ["Switchable"]
-
+Switch HarmonyNetflix "HarmonyNetflix" (living) ["Switchable"]
 
 Number IkeaHub	{ channel="tradfri:0830:gwdcefcabd5ae5:65536:battery_level" }
 Dimmer vloerlamp_woonkamer_color "floorlight living color" { channel="tradfri:0220:gwdcefcabd5ae5:65541:color_temperature" }
@@ -68,7 +65,6 @@ DateTime Ju_LastSeen "Ju_LastSeen [%1$td-%1$tm-%1$tY %1$tH:%1$tM:%1$tS]" { chann
 
 Switch phone_Mau (gMobiles) {channel="network:pingdevice:phone_Mau:online"}
 Switch phone_Ju (gMobiles) {channel="network:pingdevice:phone_Ju:online"}
-Switch CC_slaapkamer (Status) {channel="network:pingdevice:192_168_11_13:online"}
 
 DateTime Sunrise_TimeOld    "SunriseOld [%1$tH:%1$tM]" {channel="astro:sun:local:rise#start"}
 DateTime Sunset_TimeOld    "SunsetOld [%1$tH:%1$tM]" {channel="astro:sun:local:set#start"}
@@ -91,3 +87,17 @@ String strSunset "Sunset" <clock> (gWeather) {http="<[http://api.wunderground.co
 
 Switch inputTV "channel tv" ["Switchable"]
 Switch inputCD "channel cd" ["Switchable"]
+
+Image CamImage { channel="ipcamera:FOSCAM:f542eee5:image" }
+Switch CamUpdateImage "Get new picture" { channel="ipcamera:FOSCAM:f542eee5:updateImageNow" }
+Switch CamEnableMotionAlarm { channel="ipcamera:FOSCAM:f542eee5:enableMotionAlarm" }
+Switch CamMotionAlarm { channel="ipcamera:FOSCAM:f542eee5:motionAlarm" }
+Switch CamEnableAudioAlarm { channel="ipcamera:FOSCAM:f542eee5:enableAudioAlarm" }
+Switch CamAudioAlarm { channel="ipcamera:FOSCAM:f542eee5:audioAlarm" }
+Dimmer CamthresholdAudioAlarm { channel="ipcamera:FOSCAM:f542eee5:thresholdAudioAlarm" }
+Switch CamAutoLED { channel="ipcamera:FOSCAM:f542eee5:autoLED" }
+Switch CamEnableLED { channel="ipcamera:FOSCAM:f542eee5:enableLED" }
+Dimmer CamPan { channel="ipcamera:FOSCAM:f542eee5:pan" }
+Dimmer CamTilt { channel="ipcamera:FOSCAM:f542eee5:tilt" }
+Dimmer CamZoom { channel="ipcamera:FOSCAM:f542eee5:zoom" }
+String CamVideourl { channel="ipcamera:FOSCAM:f542eee5:videourl" }
