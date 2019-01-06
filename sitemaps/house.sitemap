@@ -3,10 +3,6 @@ sitemap house label="house"
     Frame label="Living"
         {
                 Switch item=tv label="TV" icon="screen" 
-// visibility=[tv==ON]
-// Switch item=HarmonyTV label="Source" mappings=["SmartHub"="Netflix","Source"="TV"] visibility=[tv==ON]
-//                Switch item=tvState label="Watch TV" icon="screen" mappings=["netFlix"="Netflix","tv"="TV", "cast"="Cast", "Guide"="Guide"] 
-                Switch item=HarmonyTV label="TV Control" icon="screen" mappings=["DirectionDown"="Down","DirectionUp"="Up"] visibility=[tvState=="Guide"]
                 Switch item=HarmonyTV label="Control" mappings=["Select"="OK", "Return"="Back"] visibility=[tv==ON] icon="screen"
                 Switch item=HarmonyAudio label="TV Volume" icon="soundvolume" mappings=["VolumeDown"="Down","VolumeUp"="Up"]
 		Switch item=audio label="Audio_Living" icon="receiver"
@@ -31,7 +27,7 @@ sitemap house label="house"
         {
                 Slider item=kobus_slaapkamer label="Kobus wakeup [%.1f %%]" icon="light"
         }        
-    Frame label="Kinderkamer" icon="screen" visibility=[CC_slaapkamer==ON]
+    Frame label="Kinderkamer" icon="screen"
         {
                 Slider item=CC_Slaapkamer_Volume label="CC_kinderkamer_Volume" icon="soundvolume"
                 Default item=CC_Slaapkamer_Player label="CC_kinderkamer_Control" icon="screen"
@@ -46,6 +42,7 @@ sitemap house label="house"
                 Switch item=phone_Ju label="Judith Home" mappings=[ON="HOME", OFF="AWAY"] icon="network"
 		Text item=phone_Mau_LastSeen label="Phone_Mau Last seen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" visibility=[phone_Mau==OFF]
                 Text item=phone_Ju_LastSeen label="Phone_Ju Last seen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" visibility=[phone_Ju==OFF]
+		Switch item=voordeurBel label="frontdoor Bel"
                 }
 	}
     Frame label="Buitenlampen" icon="garden"
@@ -53,10 +50,6 @@ sitemap house label="house"
                 Slider item=buitenlamp_achtertuin label="buitenlamp_achtertuin [%.1f %%]" icon="garden"
                 Slider item=buitenlamp_voordeur label="buitenlamp_voordeur [%.1f %%]" icon="outdoorlight"
         }
-    Frame label="Printer zolder" icon="attic"
-     	{
-        	Switch item=kerstboom label="printer" icon="text"
-     	}
     Frame label="Weer" 
                 {
                 Text item=Temperature label="weerStation voorspelling" valuecolor=[Temperature<0="BLUE",Temperature>0="RED"] icon="wind"
@@ -78,4 +71,22 @@ sitemap house label="house"
 			Switch item=daylight
                         }
                 }
+
+        Frame label="Driveway Camera" icon="camera" 
+        {   
+Switch item=CamUpdateImage label="Fetch new picture of Driveway"
+Switch item=CamEnableMotionAlarm
+Switch item=CamMotionAlarm
+Switch item=CamEnableAudioAlarm
+Switch item=CamAudioAlarm
+Slider item=CamthresholdAudioAlarm
+Switch item=CamAutoLED
+Switch item=CamEnableLED
+Slider item=CamPan
+Slider item=CamTilt
+Slider item=CamZoom
+Text item=CamVideourl 
+            Image url="http://google.com/leaveLinkAsThis" item=CamImage refresh=60000 visibility=[CamUpdateImage==ON]
+        }
+
 }
