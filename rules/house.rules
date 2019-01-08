@@ -92,8 +92,8 @@ Sunset_TimeOld.state + " Weather: " +Condition.state + " seasonOffset = "+ seaso
 }
 if ((now.minusMinutes(seasonOffsetM).isAfter((Sunrise_TimeOld.state as DateTimeType).calendar.timeInMillis))&& daylight.state == OFF && (hourOfDay < 11))
                 {
-                logInfo("DAYLIGHT", "turned ON " + now.minusMinutes(seasonOffsetM) + " after Sunrise time " +
-Sunrise_TimeOld.state + " Weather: " +Condition.state + " seasonOffsetM = "+ seasonOffsetM+ " DAYLIGHT = "+ daylight.state + " HourOfDay = " + now.hourOfDay)
+                logInfo("DAYLIGHT", "turned ON " + now.minusMinutes(seasonOffset) + " after Sunrise time " +
+Sunrise_TimeOld.state + " Weather: " +Condition.state + " seasonOffset = "+ seasonOffset+ " DAYLIGHT = "+ daylight.state + " HourOfDay = " + now.hourOfDay)
         sendCommand(darkness, OFF)        
 	Thread::sleep(300)
 	sendCommand(daylight, ON)
