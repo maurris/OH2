@@ -1,40 +1,50 @@
-sitemap house label="house" 
+sitemap house label="Our House Automation" 
 {
-    Frame label="Living"
+    Frame label="Living TV & Music"
         {
                 Switch item=tv label="TV" icon="screen" 
-                Switch item=HarmonyTV label="Control" mappings=["Select"="OK", "Return"="Back"] visibility=[tv==ON] icon="screen"
-                Switch item=HarmonyAudio label="TV Volume" icon="soundvolume" mappings=["VolumeDown"="Down","VolumeUp"="Up"]
-		Switch item=audio label="Audio_Living" icon="receiver"
-		Switch item=HarmonyAudio label="Audio Channel" mappings=["InputTV"="TV","InputCd"="Audio"] visibility=[audio==ON] icon="receiver"
-               	Switch item=toio label="Toio" icon="light"
-		Slider item=vloerlamp_woonkamer label="vloerlamp_woonkamer [%.1f %%]" icon="light"
-		Slider item=vloerlamp_woonkamer_color visibility=[vloerlamp_woonkamer>95]
-                Slider item=keukenWandLamp label="keukenWandLamp" icon="light"
+//                Switch item=HarmonyTV label="Control" mappings=["Select"="OK", "Return"="Back"] visibility=[tv==ON] icon="screen"
+//                Switch item=HarmonyAudio label="TV Volume" icon="soundvolume" mappings=["VolumeDown"="Down","VolumeUp"="Up"]
+		Switch item=audio label="Audio Living" icon="receiver"
+		Switch item=HarmonyAudio label="Change Audio Channel" mappings=["InputTV"="TV","InputCd"="Music"] visibility=[audio==ON] icon="receiver"
+	}
+    Frame label="Downstairs Lights"
+        {
+               	Switch item=toio label="Flos Toio" icon="light"
+		Slider item=vloerlamp_woonkamer label="Vloerlamp Living [%.1f %%]" icon="light"
+		Slider item=vloerlamp_woonkamer_color label="Vloerlamp Living Color" visibility=[vloerlamp_woonkamer>95]
+                Slider item=keukenWandLamp label="keuken WandLamp" icon="light"
 		Text item=IkeaHub label="IkeaHub_Battery_LOW" visibility=[IkeaHub<15] icon="lowbattery"
 	}
-    Frame label="ChromeCasts"
-        {
-                Switch item=audioKeuken label="Chromecast_Keuken" icon="switch"
-                Slider item=CC_Beneden_Alle_Volume label="audioLivingAlle" icon="soundvolume"
-                Slider item=CC_Keuken_Volume label="audioKeukenVolume" icon="soundvolume" visibility=[audioKeuken==ON]
-                Default item=CC_Keuken_Player label="CC_Keuken_Control" icon="receiver" visibility=[audioKeuken==ON]
-                Slider item=CC_Living_Volume label="audioLivingVolume" icon="soundvolume" visibility=[audio==ON]
-                Default item=CC_Living_Player label="CC_Living_Control" icon="receiver" visibility=[CC_Living_Player=="PLAY"]
-		Default item=CC_Beneden_Alle_Player label="CC_LivingAlle_Control" icon="receiver" visibility=[CC_Beneden_Alle_Player=="PLAY"]
-	}
-    Frame label="Kobus Slaapkamer" icon="light"
-        {
-                Slider item=kobus_slaapkamer label="Kobus wakeup [%.1f %%]" icon="light"
-        }        
-    Frame label="Kinderkamer" icon="screen"
+    Frame label="Kids Playroom" visibility=[CC_Slaapkamer_Player==ON] icon="screen"
         {
                 Slider item=CC_Slaapkamer_Volume label="CC_kinderkamer_Volume" icon="soundvolume"
                 Default item=CC_Slaapkamer_Player label="CC_kinderkamer_Control" icon="screen"
         }
-    Frame label="Presence"
+    Frame label="Weather Info"
+                {
+                Text item=Temp_MinMax label="Weather tomorrow (min/max)" valuecolor=[Temperature<0="BLUE",Temperature>0="RED"] icon="sun_clouds"
+                        {
+                        Text item=totalDayLight icon="sun"
+                        Text item=LastUpdate icon="calendar"
+                        Text item=Temperature icon="temperature" valuecolor=[Temperature<0="BLUE",Temperature>0="RED"]
+                        Text item=Temp_MinMax_Nu icon="temperature"
+                        Text item=Temp_MinMax icon="temperature"
+                        Text item=Condition icon="sun_clouds"
+                        Text item=Condition_Tomorrow icon="sun_clouds"
+                        Text item=Precip_Probability icon="climate"
+                        Text item=Precip_Tomorrow icon="climate"
+                        Text item=MoonFull label="Moon Phase"
+                        Text item=Sunset_TimeOld label="Sunset"
+                        Text item=Sunrise_TimeOld label="Sunrise"
+                        Switch item=Test label="Test"
+                        Switch item=darkness
+                        Switch item=daylight
+                        }
+                }
+    Frame label="Presence Info"
         {
-                Text item=lastHallMovement label="Hall Motion [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" icon="motion"
+                Text item=lastHallMovement label="Hall Motion recorded at [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" icon="motion"
                 {
 		Switch item=Presence mappings=[ON="ON", OFF="OFF"] icon="presence"
 		Switch item=halPIR label="hal motiondetect" mappings=[ON="ON", OFF="OFF"] icon="motion"
@@ -46,48 +56,44 @@ sitemap house label="house"
 		Switch item=mqttPresence 
                 }
 	}
-    Frame label="Buitenlampen" icon="garden"
+    Frame label="Outdoor Lights" icon="garden"
         {
-                Slider item=buitenlamp_achtertuin label="buitenlamp_achtertuin [%.1f %%]" icon="garden"
-                Slider item=buitenlamp_voordeur label="buitenlamp_voordeur [%.1f %%]" icon="outdoorlight"
+                Slider item=buitenlamp_achtertuin label="Buitenlamp Achtertuin [%.1f %%]" icon="garden"
+                Slider item=buitenlamp_voordeur label="Buitenlamp Voordeur [%.1f %%]" icon="outdoorlight"
         }
-    Frame label="Weer" 
-                {
-                Text item=Temperature label="weerStation voorspelling" valuecolor=[Temperature<0="BLUE",Temperature>0="RED"] icon="wind"
-                        {
-			Text item=totalDayLight icon="sun"
-                        Text item=LastUpdate icon="calendar"
-                        Text item=Temperature icon="temperature" valuecolor=[Temperature<0="BLUE",Temperature>0="RED"]
-                        Text item=Temp_MinMax_Nu icon="temperature"
-                        Text item=Temp_MinMax icon="temperature"
-                        Text item=Condition icon="sun_clouds"
-                        Text item=Condition_Tomorrow icon="sun_clouds"
-                        Text item=Precip_Probability icon="climate"
-                        Text item=Precip_Tomorrow icon="climate"
-                        Text item=MoonFull label="Moon Phase"
-                        Text item=Sunset_TimeOld label="Sunset"
-			Text item=Sunrise_TimeOld label="Sunrise"
-			Switch item=Test label="Test"
-			Switch item=darkness
-			Switch item=daylight
-                        }
-                }
-
-        Frame label="Driveway Camera" icon="camera" 
-        {   
-Switch item=CamUpdateImage label="Fetch new picture of Driveway"
-Switch item=CamEnableMotionAlarm
-Switch item=CamMotionAlarm
-Switch item=CamEnableAudioAlarm
-Switch item=CamAudioAlarm
-Slider item=CamthresholdAudioAlarm
-Switch item=CamAutoLED
-Switch item=CamEnableLED
-Slider item=CamPan
-Slider item=CamTilt
-Slider item=CamZoom
-Text item=CamVideourl 
-            Image url="http://google.com/leaveLinkAsThis" item=CamImage refresh=60000 visibility=[CamUpdateImage==ON]
+    Frame label="Chromecast Controle & Volume"
+	{
+	Text item=CC_Keuken_Player label="ChromeCasts" icon="receiver"
+        	{
+                Slider item=CC_Beneden_Alle_Volume label="audio Living Group Volume" icon="soundvolume"
+                Slider item=CC_Keuken_Volume label="audio Kitchen Volume" icon="soundvolume" 
+                Slider item=CC_Living_Volume label="audio Living Volume" icon="soundvolume" 
+                Default item=CC_Living_Player label="CC Living Control" icon="receiver" 
+                Default item=CC_Beneden_Alle_Player label="CC Living Group Control" icon="receiver" 
+                Default item=CC_Keuken_Player label="CC Kitchen Control" icon="receiver"        	
+		}
+	}
+    Frame label="Bedroom Kobus" icon="light"
+        {
+                Slider item=kobus_slaapkamer label="Sink Light [%.1f %%]" icon="light"
         }
-
+    Frame label="Driveway Camera"
+		{
+        	Text item=CamVideourl label="Driveway Camera" icon="camera" 
+        		{   
+			Switch item=CamUpdateImage label="Fetch new picture of Driveway"
+			Switch item=CamEnableMotionAlarm
+			Switch item=CamMotionAlarm
+			Switch item=CamEnableAudioAlarm
+			Switch item=CamAudioAlarm
+			Slider item=CamthresholdAudioAlarm
+			Switch item=CamAutoLED
+			Switch item=CamEnableLED
+			Slider item=CamPan
+			Slider item=CamTilt
+			Slider item=CamZoom
+			Text item=CamVideourl 
+            		Image url="http://google.com/leaveLinkAsThis" item=CamImage refresh=60000 visibility=[CamUpdateImage==ON]
+        		}
+		}
 }
