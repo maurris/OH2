@@ -43,6 +43,7 @@ sitemap house label="house"
 		Text item=phone_Mau_LastSeen label="Phone_Mau Last seen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" visibility=[phone_Mau==OFF]
                 Text item=phone_Ju_LastSeen label="Phone_Ju Last seen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" visibility=[phone_Ju==OFF]
 		Switch item=voordeurBel label="frontdoor Bel"
+		Switch item=mqttPresence 
                 }
 	}
     Frame label="Buitenlampen" icon="garden"
