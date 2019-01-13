@@ -27,12 +27,12 @@ Player CC_Beneden_Alle_Player { channel="chromecast:audiogroup:c7b1bd14-e90f-498
 String CC_Beneden_Alle_playuri { channel="chromecast:audiogroup:c7b1bd14-e90f-4987-b2bf-3d2401f2f01e:playuri" }
 
 String HarmonyHub "hHub Activity [%s]"   { channel="harmonyhub:hub:HarmonyHub:currentActivity" }
-String HarmonyTV "HarmonyTV"  { channel="harmonyhub:device:HarmonyHub:50380814:buttonPress" }
-String HarmonyAudio "HarmonyAudio"  { channel="harmonyhub:device:HarmonyHub:50380815:buttonPress" }
+String HarmonyTV "HarmonyTV"  { channel="harmonyhub:device:HarmonyHub:60128271:buttonPress" }
+String HarmonyAudio "HarmonyAudio"  { channel="harmonyhub:device:HarmonyHub:60128796:buttonPress" }
 String tvState "tvState"
 String tvControl "tvControl"
-String HarmonyAudioUpString "Living Volume Up" (living) { channel="harmonyhub:device:HarmonyHub:50380815:buttonPress" }
-String HarmonyAudioDownString "Living Volume Down" (living) { channel="harmonyhub:device:HarmonyHub:50380815:buttonPress" }
+String HarmonyAudioUpString "Living Volume Up" (living) { channel="harmonyhub:device:HarmonyHub:60128796:buttonPress" }
+String HarmonyAudioDownString "Living Volume Down" (living) { channel="harmonyhub:device:HarmonyHub:60128796:buttonPress" }
 Switch HarmonyAudioUp "Tuner Up" (living) ["Switchable"]
 Switch HarmonyAudioDown "Tuner Down" (living) ["Switchable"]
 Switch HarmonyNetflix "HarmonyNetflix" (living) ["Switchable"]
@@ -101,3 +101,6 @@ Dimmer CamPan { channel="ipcamera:FOSCAM:f542eee5:pan" }
 Dimmer CamTilt { channel="ipcamera:FOSCAM:f542eee5:tilt" }
 Dimmer CamZoom { channel="ipcamera:FOSCAM:f542eee5:zoom" }
 String CamVideourl { channel="ipcamera:FOSCAM:f542eee5:videourl" }
+
+Switch mqttPresence {mqtt=">[mqtt:house/living/Presence:command:ON:1],>[mqtt:house/living/Presence:command:OFF:0]"}
+
